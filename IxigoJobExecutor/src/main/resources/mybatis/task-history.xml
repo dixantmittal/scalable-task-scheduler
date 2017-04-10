@@ -1,0 +1,39 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ixigo.dbmapper.ITaskHistoryMapper">
+
+    <resultMap id="result" type="com.ixigo.dbmapper.entity.TaskHistoryEntity">
+        <result property="jobId" column="job_id"/>
+        <result property="taskType" column="task_type"/>
+        <result property="taskMetadata" column="task_metadata"/>
+        <result property="executionStatus" column="execution_status"/>
+        <result property="oldScheduledTime" column="old_scheduled_time"/>
+        <result property="newScheduledTime" column="new_scheduled_time"/>
+    </resultMap>
+
+    <sql id="base_column_list">
+        job_id,
+        task_type,
+        task_metadata,
+        execution_status,
+        old_scheduled_time,
+        new_scheduled_time
+    </sql>
+
+    <insert id="addTaskHistory" parameterType="com.ixigo.dbmapper.entity.TaskHistoryEntity">
+        INSERT INTO task_history(
+        <include refid="base_column_list"/>
+        )
+        VALUES (
+        #{jobId},
+        #{taskType},
+        #{taskMetadata},
+        #{executionStatus},
+        #{oldScheduledTime},
+        #{newScheduledTime}
+        );
+    </insert>
+
+</mapper>

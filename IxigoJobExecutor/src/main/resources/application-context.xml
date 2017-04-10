@@ -1,0 +1,74 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
+        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.1.xsd">
+
+    <mvc:annotation-driven/>
+    <mvc:resources mapping="/resources/**" location="classpath:/resources"/>
+
+    <!--<bean id="jobQueuingServiceProvider"-->
+    <!--class="com.ixigo.factory.JobQueuingServiceProvider"-->
+    <!--factory-method="getInstance"/>-->
+
+    <!--<bean id="scheduler"-->
+    <!--class="org.quartz.impl.StdSchedulerFactory"-->
+    <!--factory-method="getDefaultScheduler"/>-->
+
+    <bean id="taskExecutorPlaceholderConfig" class="com.ixigo.utils.SpringPropertiesUtil">
+        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+        <property name="locations">
+            <value>classpath*:*application.properties</value>
+        </property>
+    </bean>
+
+    <!-- Task scheduler for Cache Update. -->
+    <task:scheduled-tasks scheduler="cacheUpdateScheduler">
+        <task:scheduled ref="cacheBuilderImpl" method="buildCaches"
+                        cron="0 0/${jobExecutor.cacheUpdater.delay} 0-23 * * *"/>
+    </task:scheduled-tasks>
+    <task:scheduler id="cacheUpdateScheduler" pool-size="1"/>
+
+    <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="">
+        <property name="driverClassName" value="${database.driverClassName}"/>
+        <property name="url" value="${database.url}"/>
+        <property name="username" value="${database.username}"/>
+        <property name="password" value="${database.password}"/>
+        <property name="maxWaitMillis" value="${database.maxwait}"/>
+        <property name="maxIdle" value="${database.maxIdle}"/>
+        <property name="initialSize" value="${database.inititalsize}"/>
+        <property name="minIdle" value="${database.minIdle}"/>
+        <property name="timeBetweenEvictionRunsMillis" value="${database.timebetweenevictionrunsmillis}"/>
+        <property name="minEvictableIdleTimeMillis" value="${database.minevictableidletimemillis}"/>
+    </bean>
+
+    <!-- MyBatis related beans -->
+    <bean id="sqlSessionFactoryMybatis" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="configLocation" value="classpath:myBatis/sqlmap-config.xml"/>
+    </bean>
+
+    <bean name="myBatisDB" id="myBatisDB"
+          class="org.mybatis.spring.SqlSessionTemplate">
+        <constructor-arg index="0" ref="sqlSessionFactoryMybatis"/>
+        <constructor-arg index="1" value="REUSE"/>
+    </bean>
+
+    <bean id="mapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.ixigo.dbmapper"/>
+        <property name="sqlSessionTemplateBeanName" value="myBatisDB"/>
+    </bean>
+
+    <!--http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd-->
+
+    <!--<tx:annotation-driven transaction-manager="transactionManager"/>-->
+    <!--<bean id="transactionManager"-->
+    <!--class="org.springframework.jdbc.datasource.DataSourceTransactionManager">-->
+    <!--<property name="dataSource" ref="dataSource"/>-->
+    <!--</bean>-->
+
+</beans>
