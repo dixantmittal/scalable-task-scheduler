@@ -11,9 +11,10 @@
     <description>Ixigo Job Scheduler</description>
 
     <modules>
-        <module>IxigoJobSchedulerCommons</module>
-        <module>KafkaJobQueuingService</module>
+        <module>JobSchedulerCommons</module>
+        <module>KafkaQueuingService</module>
         <module>JobSchedulingService</module>
+        <module>JobExecutor</module>
     </modules>
 
 

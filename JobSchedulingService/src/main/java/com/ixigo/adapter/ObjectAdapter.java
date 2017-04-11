@@ -13,15 +13,16 @@ import java.text.ParseException;
  * Created by dixant on 27/03/17.
  */
 public class ObjectAdapter {
-    public static JobSchedulingDetails adapt(AddTaskRequest object) {
+    public static JobSchedulingDetails adapt(AddTaskRequest request) {
         JobSchedulingDetails jobDetails = new JobSchedulingDetails();
-        jobDetails.setTaskType(object.getTaskType());
-        jobDetails.setTaskMetadata(object.getTaskMetadata());
-        jobDetails.setPriority(Integer.parseInt(object.getPriority()));
+        jobDetails.setTaskType(request.getTaskType());
+        jobDetails.setTaskMetadata(request.getTaskMetadata());
+        jobDetails.setPriority(Integer.parseInt(request.getPriority()));
+        jobDetails.setRetryJobDetails(request.getRetryJobDetails());
 
         try {
             jobDetails.setScheduledTime(IxigoDateUtils
-                    .toCalendar(IxigoDateUtils.parseDate(object.getScheduledTime(), CommonConstants.DATE_PATTERN)));
+                    .toCalendar(IxigoDateUtils.parseDate(request.getScheduledTime(), CommonConstants.DATE_PATTERN)));
         } catch (ParseException e) {
             throw new ServiceException(ServiceExceptionCodes.DATE_FORMAT_EXCEPTION.code(),
                     ServiceExceptionCodes.DATE_FORMAT_EXCEPTION.message());
