@@ -46,19 +46,6 @@ public class JobSchedulerRequestController {
             throw new RequestValidationException(error.code(), error.message());
         }
         return requestService.addTask(request);
-
-//         For testing
-//        int i = 0;
-//        while (true) {
-//            request.setTaskMetadata("{\"" + i + "\":\"\"}");
-//            try {
-//                Thread.sleep(1000);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//            requestService.addTask(request);
-//            i++;
-//        }
     }
 
     @RequestMapping(
