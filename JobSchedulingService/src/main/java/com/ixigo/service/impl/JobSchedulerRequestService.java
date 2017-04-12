@@ -37,12 +37,14 @@ public class JobSchedulerRequestService implements IJobSchedulerRequestService {
     public AddTaskResponse addTask(AddTaskRequest request) {
         JobSchedulingDetails jobDetails = ObjectAdapter.adapt(request);
         String jobId = jobManagementService.createJob(jobDetails);
+        log.debug("Job added to Job Scheduler. [JOB-ID]: {}", jobId);
         return new AddTaskResponse(Status.SUCCESS, jobId);
     }
 
     public AddTaskResponse addTask(AddTaskWithJobIdRequest request) {
         JobSchedulingDetails jobDetails = ObjectAdapter.adapt(request);
         String jobId = jobManagementService.createJobWithJobId(jobDetails, request.getJobId());
+        log.debug("Job added to Job Scheduler. [JOB-ID]: {}", jobId);
         return new AddTaskResponse(Status.SUCCESS, jobId);
     }
 
@@ -50,6 +52,7 @@ public class JobSchedulerRequestService implements IJobSchedulerRequestService {
     public DeleteTaskResponse deleteTask(DeleteTaskRequest request) {
         try {
             scheduler.deleteJob(jobKey(request.getJobId(), ServiceConstants.DEFAULT_GROUP_ID));
+            log.debug("Job removed from Job Scheduler. [JOB-ID]: {}", request.getJobId());
         } catch (SchedulerException e) {
             log.error("Scheduler exception occurred. Exception: {}", e);
             throw new InternalServerException();

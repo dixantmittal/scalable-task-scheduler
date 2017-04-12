@@ -2,7 +2,7 @@ package com.ixigo.entity;
 
 import lombok.Data;
 
-import java.util.Calendar;
+import java.time.LocalDateTime;
 
 /**
  * Created by dixant on 28/03/17.
@@ -11,6 +11,6 @@ import java.util.Calendar;
 public abstract class JobDetails {
     protected String taskType;
     protected String taskMetadata;
-    protected Calendar scheduledTime;
+    protected LocalDateTime scheduledTime;
     protected RetryJobDetails retryJobDetails;
 }

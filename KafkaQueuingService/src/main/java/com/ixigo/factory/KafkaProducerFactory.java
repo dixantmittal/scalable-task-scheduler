@@ -11,14 +11,15 @@ import java.util.Map;
  * Created by dixant on 22/03/17.
  */
 @Component
-public class KafkaClientFactory {
+public class KafkaProducerFactory {
 
-    Map<KafkaTopic, IxigoKafkaProducer> _PRODUCER_CACHE = new HashMap<KafkaTopic, IxigoKafkaProducer>();
+    private Map<KafkaTopic, IxigoKafkaProducer> _PRODUCER_CACHE = new HashMap<KafkaTopic, IxigoKafkaProducer>();
 
-    // TODO take care of threads
     public IxigoKafkaProducer getKafkaProducer(KafkaTopic topic) {
         if (_PRODUCER_CACHE.get(topic) == null) {
-            _PRODUCER_CACHE.put(topic, IxigoKafkaProducerBuilder.buildNewKafkaProducerWithTopic(topic));
+            synchronized (this.getClass()) {
+                _PRODUCER_CACHE.putIfAbsent(topic, IxigoKafkaProducerBuilder.buildNewKafkaProducerWithTopic(topic));
+            }
         }
         return _PRODUCER_CACHE.get(topic);
     }

@@ -21,9 +21,8 @@ public class ObjectAdapter {
         jobDetails.setRetryJobDetails(request.getRetryJobDetails());
 
         try {
-            jobDetails.setScheduledTime(IxigoDateUtils
-                    .toCalendar(IxigoDateUtils.parseDate(request.getScheduledTime(), CommonConstants.DATE_PATTERN)));
-        } catch (ParseException e) {
+            jobDetails.setScheduledTime(IxigoDateUtils.parse(request.getScheduledTime()));
+        } catch (Exception e) {
             throw new ServiceException(ServiceExceptionCodes.DATE_FORMAT_EXCEPTION.code(),
                     ServiceExceptionCodes.DATE_FORMAT_EXCEPTION.message());
         }

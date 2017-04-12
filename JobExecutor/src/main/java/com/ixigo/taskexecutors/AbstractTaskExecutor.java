@@ -11,13 +11,13 @@ import com.ixigo.utils.ObjectAdapter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Calendar;
+import java.time.LocalDateTime;
 
 /**
  * Created by dixant on 10/04/17.
  */
 @Slf4j
-public abstract class AbstractTaskExecutor implements ITaskExecutor {
+public abstract class AbstractTaskExecutor<T> implements ITaskExecutor {
 
     @Autowired
     ITaskDao taskDao;
@@ -26,6 +26,7 @@ public abstract class AbstractTaskExecutor implements ITaskExecutor {
 
     @Override
     public void execute(KafkaTaskDetails taskDetails) {
+        log.debug("Job received by Task Executor. [JOB-ID]: {}", taskDetails.getJobId());
         // create a task history object
         TaskHistoryEntity taskHistory = ObjectAdapter.adapt(taskDetails);
         try {
@@ -37,6 +38,7 @@ public abstract class AbstractTaskExecutor implements ITaskExecutor {
             if (!response) {
                 retryTask(taskDetails, taskHistory);
             }
+            log.debug("Job execution completed. [JOB-ID]: {}", taskDetails.getJobId());
         } catch (JsonSyntaxException jse) {
             log.error("Wrong task meta passed to TaskMeta: " + taskDetails.getTaskMetadata());
             taskHistory.setExecutionStatus(Status.FAILURE.toString());
@@ -49,10 +51,10 @@ public abstract class AbstractTaskExecutor implements ITaskExecutor {
         taskDao.addTaskHistory(taskHistory);
     }
 
-    private void retryTask(KafkaTaskDetails metadata, TaskHistoryEntity entity) {
+    private void retryTask(KafkaTaskDetails metadata, TaskHistoryEntity taskHistory) {
 
         if (metadata.getRetryJobDetails() == null) {
-            entity.setRemarks("Retry details not found");
+            taskHistory.setRemarks("Retry details not found");
             return;
         }
 
@@ -61,15 +63,15 @@ public abstract class AbstractTaskExecutor implements ITaskExecutor {
         int retryCount = retryDetails.getRetriesCount() + 1;
         int maxRetriesAllowed = retryDetails.getMaxRetriesAllowed();
         if (retryCount > maxRetriesAllowed) {
-            entity.setRemarks("Retries exceeded");
+            taskHistory.setRemarks("Retries exceeded");
             return;
         }
         int retryBase = retryDetails.getRetryBase();
         int delayInSeconds = retryDetails.getDelayInSeconds();
-        int totalDelay = (int) Math.pow(delayInSeconds * retryCount, retryBase);
+        int totalDelay = delayInSeconds * (int) Math.pow(retryCount, retryBase);
 
         // find the new time
-        Calendar newScheduledTime = IxigoDateUtils.add(metadata.getScheduledTime(), Calendar.SECOND, totalDelay);
+        LocalDateTime newScheduledTime = metadata.getScheduledTime().plusSeconds(totalDelay);
 
         // increase retry count
         retryDetails.setRetriesCount(retryCount);
@@ -80,8 +82,9 @@ public abstract class AbstractTaskExecutor implements ITaskExecutor {
         //TODO call scheduling service to reschedule
 
         // add new time to task history
-        entity.setNewScheduledTime(IxigoDateUtils.dateToString(newScheduledTime));
+        taskHistory.setNewScheduledTime(IxigoDateUtils.dateToString(newScheduledTime));
+        log.debug("Job rescheduled. [JOB-ID]: {}. [NEW TIME]: {}", metadata.getJobId(), taskHistory.getNewScheduledTime());
 
-        entity.setRemarks("Retrying task");
+        taskHistory.setRemarks("Retrying task");
     }
 }

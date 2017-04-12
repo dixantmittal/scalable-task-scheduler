@@ -4,7 +4,7 @@ import com.ixigo.client.IxigoKafkaClient;
 import com.ixigo.client.entity.IxigoKafkaProducer;
 import com.ixigo.entity.KafkaTaskDetails;
 import com.ixigo.entity.KafkaTopic;
-import com.ixigo.factory.KafkaClientFactory;
+import com.ixigo.factory.KafkaProducerFactory;
 import com.ixigo.factory.TopicFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ public class KafkaTaskPublisher implements IKafkaTaskPublisher {
     private TopicFactory topicFactory;
 
     @Autowired
-    private KafkaClientFactory kafkaClientFactory;
+    private KafkaProducerFactory kafkaProducerFactory;
 
     public boolean publishTask(KafkaTaskDetails taskDetails) {
         KafkaTopic topic = topicFactory.getTopicForTaskType(taskDetails.getTaskType());
@@ -32,7 +32,7 @@ public class KafkaTaskPublisher implements IKafkaTaskPublisher {
             log.error("Topic not found for task type: {}. Can not proceed further.", taskDetails.getTaskType());
             return false;
         }
-        IxigoKafkaProducer producer = kafkaClientFactory.getKafkaProducer(topic);
+        IxigoKafkaProducer producer = kafkaProducerFactory.getKafkaProducer(topic);
         return ixigoKafkaClient.publish(producer, taskDetails.getJobId(), taskDetails);
     }
 }

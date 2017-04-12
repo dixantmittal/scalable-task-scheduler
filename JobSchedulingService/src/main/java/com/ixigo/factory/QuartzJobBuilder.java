@@ -7,6 +7,9 @@ import com.ixigo.utils.IDGenerationUtils;
 import com.ixigo.utils.JsonUtils;
 import org.quartz.*;
 
+import java.util.Date;
+import java.time.ZoneId;
+
 /**
  * Created by dixant on 27/03/17.
  */
@@ -20,6 +23,7 @@ public class QuartzJobBuilder {
         jobId = (jobId == null) ? IDGenerationUtils.generateRandomUUID(ServiceConstants.JOB_IDENTIFIER) : jobId;
         JobDataMap jobDataMap = new JobDataMap();
         jobDataMap.put(ServiceConstants.JOB_DETAILS, JsonUtils.toJson(jobDetails));
+        jobDataMap.put(ServiceConstants.JOB_ID, jobId);
         JobDetail jobDetail = JobBuilder.newJob(AddToExecutionQueueJob.class)
                 .withIdentity(jobId, ServiceConstants.DEFAULT_GROUP_ID)
                 .usingJobData(jobDataMap)
@@ -31,9 +35,11 @@ public class QuartzJobBuilder {
         int priority = jobDetails.getPriority();
         Trigger jobTrigger = TriggerBuilder.newTrigger()
                 .withIdentity(IDGenerationUtils.generateRandomUUID(ServiceConstants.TRIGGER_IDENTIFIER), ServiceConstants.DEFAULT_GROUP_ID)
-                .startAt(jobDetails.getScheduledTime().getTime())
+                .startAt(Date.from(jobDetails.getScheduledTime().atZone(ZoneId.systemDefault()).toInstant()))
                 .withPriority(priority)
                 .build();
+
         return jobTrigger;
     }
+
 }
