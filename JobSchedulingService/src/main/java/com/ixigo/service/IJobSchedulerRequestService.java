@@ -2,6 +2,7 @@ package com.ixigo.service;
 
 import com.ixigo.request.AddTaskRequest;
 import com.ixigo.request.DeleteTaskRequest;
+import com.ixigo.request.StopSchedulerRequest;
 import com.ixigo.response.AddTaskResponse;
 import com.ixigo.response.DeleteTaskResponse;
 import com.ixigo.response.StartSchedulerResponse;
@@ -17,5 +18,5 @@ public interface IJobSchedulerRequestService {
 
     StartSchedulerResponse startScheduler();
 
-    StopSchedulerResponse stopScheduler();
+    StopSchedulerResponse stopScheduler(StopSchedulerRequest request);
 }

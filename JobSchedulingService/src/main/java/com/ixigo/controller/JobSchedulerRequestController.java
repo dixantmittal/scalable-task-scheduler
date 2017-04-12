@@ -2,12 +2,14 @@ package com.ixigo.controller;
 
 import com.ixigo.cache.service.ICacheBuilder;
 import com.ixigo.constants.RestURIConstants;
+import com.ixigo.enums.SchedulerMode;
 import com.ixigo.enums.Status;
 import com.ixigo.exception.RequestValidationException;
 import com.ixigo.exception.codes.RequestValidationExceptionCodes;
 import com.ixigo.request.AddTaskRequest;
 import com.ixigo.request.AddTaskWithJobIdRequest;
 import com.ixigo.request.DeleteTaskRequest;
+import com.ixigo.request.StopSchedulerRequest;
 import com.ixigo.response.*;
 import com.ixigo.service.IJobSchedulerRequestService;
 import lombok.extern.slf4j.Slf4j;
@@ -99,8 +101,9 @@ public class JobSchedulerRequestController {
             method = RequestMethod.DELETE,
             produces = RestURIConstants.APPLICATION_JSON)
     @ResponseBody
-    StopSchedulerResponse stopScheduler() {
-        return requestService.stopScheduler();
+    StopSchedulerResponse stopScheduler(@RequestParam("mode") String mode) {
+        StopSchedulerRequest request = new StopSchedulerRequest(SchedulerMode.forName(mode));
+        return requestService.stopScheduler(request);
     }
 
     @RequestMapping(value = RestURIConstants.CACHE_RELOAD, method = RequestMethod.POST, produces = RestURIConstants.APPLICATION_JSON)

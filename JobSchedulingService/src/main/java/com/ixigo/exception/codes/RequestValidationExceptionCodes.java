@@ -4,6 +4,7 @@ package com.ixigo.exception.codes;
  * Created by dixant on 04/04/17.
  */
 public enum RequestValidationExceptionCodes {
+    INVALID_SCHEDULER_MODE("ER-2103", "Invalid scheduler mode passed."),
     COUNT_IS_BLANK("ER-2101", "Count can not be blank."),
     TOPIC_NAME_IS_BLANK("ER-2102", "Topic name can not be blank.");
 

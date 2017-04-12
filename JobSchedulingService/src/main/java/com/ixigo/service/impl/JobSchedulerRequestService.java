@@ -5,9 +5,14 @@ import com.ixigo.constants.ServiceConstants;
 import com.ixigo.entity.JobSchedulingDetails;
 import com.ixigo.enums.Status;
 import com.ixigo.exception.InternalServerException;
+import com.ixigo.exception.RequestValidationException;
+import com.ixigo.exception.ServiceException;
+import com.ixigo.exception.codes.RequestValidationExceptionCodes;
+import com.ixigo.exception.codes.ServiceExceptionCodes;
 import com.ixigo.request.AddTaskRequest;
 import com.ixigo.request.AddTaskWithJobIdRequest;
 import com.ixigo.request.DeleteTaskRequest;
+import com.ixigo.request.StopSchedulerRequest;
 import com.ixigo.response.AddTaskResponse;
 import com.ixigo.response.DeleteTaskResponse;
 import com.ixigo.response.StartSchedulerResponse;
@@ -63,6 +68,10 @@ public class JobSchedulerRequestService implements IJobSchedulerRequestService {
     @Override
     public StartSchedulerResponse startScheduler() {
         try {
+            if (scheduler.isShutdown()) {
+                throw new ServiceException(ServiceExceptionCodes.SCHEDULER_HAS_BEEN_SHUTDOWN.code(),
+                        ServiceExceptionCodes.SCHEDULER_HAS_BEEN_SHUTDOWN.message());
+            }
             if (!scheduler.isStarted() || scheduler.isInStandbyMode()) {
                 scheduler.start();
             }
@@ -74,10 +83,20 @@ public class JobSchedulerRequestService implements IJobSchedulerRequestService {
     }
 
     @Override
-    public StopSchedulerResponse stopScheduler() {
+    public StopSchedulerResponse stopScheduler(StopSchedulerRequest request) {
         try {
             if (!scheduler.isShutdown() || scheduler.isStarted()) {
-                scheduler.standby();
+                switch (request.getMode()) {
+                    case STANDBY:
+                        scheduler.standby();
+                        break;
+                    case SHUTDOWN:
+                        scheduler.shutdown();
+                        break;
+                    case NULL:
+                        throw new RequestValidationException(RequestValidationExceptionCodes.INVALID_SCHEDULER_MODE.code(),
+                                RequestValidationExceptionCodes.INVALID_SCHEDULER_MODE.message());
+                }
             }
         } catch (SchedulerException e) {
             log.error("Error occurred while stopping scheduler. Error: " + e);
