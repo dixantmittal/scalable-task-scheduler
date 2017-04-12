@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
  * Created by dixant on 10/04/17.
  */
 @Slf4j
-public abstract class AbstractTaskExecutor<T> implements ITaskExecutor {
+public abstract class AbstractTaskExecutor implements ITaskExecutor {
 
     @Autowired
     ITaskDao taskDao;
