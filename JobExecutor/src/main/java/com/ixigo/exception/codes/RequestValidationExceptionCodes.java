@@ -4,7 +4,7 @@ package com.ixigo.exception.codes;
  * Created by dixant on 04/04/17.
  */
 public enum RequestValidationExceptionCodes {
-    COUNT_IS_BLANK("ER-2101", "Count can not be blank."),
+    INVALID_COUNT("ER-2101", "Invalid count."),
     TOPIC_NAME_IS_BLANK("ER-2102", "Topic name can not be blank.");
 
     String code;

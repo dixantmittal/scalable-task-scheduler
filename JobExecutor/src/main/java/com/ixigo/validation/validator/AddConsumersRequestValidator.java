@@ -2,7 +2,7 @@ package com.ixigo.validation.validator;
 
 import com.ixigo.exception.codes.RequestValidationExceptionCodes;
 import com.ixigo.request.AddConsumersRequest;
-import com.ixigo.validation.IncreaseConsumerRequestValidation;
+import com.ixigo.validation.AddConsumersRequestValidation;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.validation.ConstraintValidator;
@@ -11,7 +11,7 @@ import javax.validation.ConstraintValidatorContext;
 /**
  * Created by dixant on 04/04/17.
  */
-public class IncreaseConsumerRequestValidator implements ConstraintValidator<IncreaseConsumerRequestValidation, AddConsumersRequest> {
+public class AddConsumersRequestValidator implements ConstraintValidator<AddConsumersRequestValidation, AddConsumersRequest> {
 
     private void addConstraintViolation(ConstraintValidatorContext context,
                                         String requestExceptionCodes) {
@@ -21,7 +21,7 @@ public class IncreaseConsumerRequestValidator implements ConstraintValidator<Inc
     }
 
     @Override
-    public void initialize(IncreaseConsumerRequestValidation constraintAnnotation) {
+    public void initialize(AddConsumersRequestValidation constraintAnnotation) {
     }
 
     @Override
@@ -31,7 +31,7 @@ public class IncreaseConsumerRequestValidator implements ConstraintValidator<Inc
             return false;
         }
         if (request.getCount() == 0) {
-            addConstraintViolation(context, RequestValidationExceptionCodes.COUNT_IS_BLANK.name());
+            addConstraintViolation(context, RequestValidationExceptionCodes.INVALID_COUNT.name());
             return false;
         }
         return true;

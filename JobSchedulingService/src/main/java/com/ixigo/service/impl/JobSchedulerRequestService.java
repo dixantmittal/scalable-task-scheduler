@@ -93,9 +93,6 @@ public class JobSchedulerRequestService implements IJobSchedulerRequestService {
                     case SHUTDOWN:
                         scheduler.shutdown();
                         break;
-                    case NULL:
-                        throw new RequestValidationException(RequestValidationExceptionCodes.INVALID_SCHEDULER_MODE.code(),
-                                RequestValidationExceptionCodes.INVALID_SCHEDULER_MODE.message());
                 }
             }
         } catch (SchedulerException e) {

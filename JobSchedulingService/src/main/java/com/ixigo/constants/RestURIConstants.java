@@ -7,6 +7,7 @@ public interface RestURIConstants {
 
     String APPLICATION_JSON = "application/json";
 
+    String JOB_SCHEDULER_BASE_URI = "/api/job-scheduler";
     String TASK = "/task";
     String JOB_ID = "/job-id";
     String STOP_SCHEDULER = "/scheduler/stop";

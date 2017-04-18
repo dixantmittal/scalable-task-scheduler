@@ -6,8 +6,7 @@ package com.ixigo.enums;
 public enum SchedulerMode {
     START("START"),
     SHUTDOWN("SHUTDOWN"),
-    STANDBY("STANDBY"),
-    NULL("NULL");
+    STANDBY("STANDBY");
 
     private String value;
 
@@ -21,7 +20,7 @@ public enum SchedulerMode {
                 return schedulerMode;
             }
         }
-        return NULL;
+        return null;
     }
 
     @Override

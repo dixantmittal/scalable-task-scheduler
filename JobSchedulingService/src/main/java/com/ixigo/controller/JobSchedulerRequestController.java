@@ -18,17 +18,22 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.ConstraintViolation;
 import javax.validation.Valid;
 import javax.validation.Validator;
+import java.util.Set;
 
 /**
  * Created by dixant on 27/03/17.
  */
 @Controller
 @Slf4j
+@RequestMapping(value = RestURIConstants.JOB_SCHEDULER_BASE_URI)
 public class JobSchedulerRequestController {
+
     @Autowired
     Validator validator;
+
     @Autowired
     private IJobSchedulerRequestService requestService;
     @Autowired
@@ -70,7 +75,7 @@ public class JobSchedulerRequestController {
     DeleteTaskResponse deleteTask(@RequestParam("job-id") String jobId) {
         DeleteTaskRequest request = new DeleteTaskRequest();
         request.setJobId(jobId);
-        validator.validate(request);
+        validateRequest(request);
         return requestService.deleteTask(request);
     }
 
@@ -90,6 +95,7 @@ public class JobSchedulerRequestController {
     @ResponseBody
     StopSchedulerResponse stopScheduler(@RequestParam("mode") String mode) {
         StopSchedulerRequest request = new StopSchedulerRequest(SchedulerMode.forName(mode));
+        validateRequest(request);
         return requestService.stopScheduler(request);
     }
 
@@ -100,5 +106,18 @@ public class JobSchedulerRequestController {
         ReloadCacheResponse response = new ReloadCacheResponse();
         response.setStatus(Status.SUCCESS);
         return response;
+    }
+
+    <T> void validateRequest(T request) {
+        Set<ConstraintViolation<T>> constraintViolations = validator.validate(request);
+        if (constraintViolations != null && constraintViolations.size() > 0) {
+            log.error("Error occurred while validating request. Request: {}", request.getClass().getName());
+            RequestValidationExceptionCodes error = RequestValidationExceptionCodes
+                    .forName(constraintViolations.iterator().next().getMessage());
+            throw new RequestValidationException(
+                    error.code(),
+                    error.message()
+            );
+        }
     }
 }

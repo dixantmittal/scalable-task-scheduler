@@ -1,6 +1,6 @@
 package com.ixigo.validation;
 
-import com.ixigo.validation.validator.IncreaseConsumerRequestValidator;
+import com.ixigo.validation.validator.AddConsumersRequestValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -11,11 +11,11 @@ import java.lang.annotation.*;
  */
 @Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = {IncreaseConsumerRequestValidator.class})
+@Constraint(validatedBy = {AddConsumersRequestValidator.class})
 @Documented
-public @interface IncreaseConsumerRequestValidation {
+public @interface AddConsumersRequestValidation {
     String message() default
-            "{com.ixigo.validation.IncreaseConsumerRequestValidation.message}";
+            "{com.ixigo.validation.AddConsumersRequestValidation.message}";
 
     Class<?>[] groups() default {};
 
