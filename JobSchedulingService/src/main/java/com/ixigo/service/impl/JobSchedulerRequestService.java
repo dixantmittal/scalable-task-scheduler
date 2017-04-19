@@ -5,9 +5,7 @@ import com.ixigo.constants.ServiceConstants;
 import com.ixigo.entity.JobSchedulingDetails;
 import com.ixigo.enums.Status;
 import com.ixigo.exception.InternalServerException;
-import com.ixigo.exception.RequestValidationException;
 import com.ixigo.exception.ServiceException;
-import com.ixigo.exception.codes.RequestValidationExceptionCodes;
 import com.ixigo.exception.codes.ServiceExceptionCodes;
 import com.ixigo.request.AddTaskRequest;
 import com.ixigo.request.AddTaskWithJobIdRequest;
@@ -56,7 +54,14 @@ public class JobSchedulerRequestService implements IJobSchedulerRequestService {
     @Override
     public DeleteTaskResponse deleteTask(DeleteTaskRequest request) {
         try {
-            scheduler.deleteJob(jobKey(request.getJobId(), ServiceConstants.DEFAULT_GROUP_ID));
+            if (scheduler.checkExists(jobKey(request.getJobId(), ServiceConstants.DEFAULT_GROUP_ID))) {
+                scheduler.deleteJob(jobKey(request.getJobId(), ServiceConstants.DEFAULT_GROUP_ID));
+            } else {
+                throw new ServiceException(
+                        ServiceExceptionCodes.JOB_ID_NOT_PRESENT.code(),
+                        ServiceExceptionCodes.JOB_ID_NOT_PRESENT.message()
+                );
+            }
             log.debug("Job removed from Job Scheduler. [JOB-ID]: {}", request.getJobId());
         } catch (SchedulerException e) {
             log.error("Scheduler exception occurred. Exception: {}", e);
