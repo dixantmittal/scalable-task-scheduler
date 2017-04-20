@@ -1,12 +1,13 @@
-package com.ixigo.utils;
+package com.ixigo.utils.adapter;
 
 import com.ixigo.dbmapper.entity.TaskHistoryEntity;
 import com.ixigo.entity.KafkaTaskDetails;
+import com.ixigo.utils.IxigoDateUtils;
 
 /**
- * Created by dixant on 03/04/17.
+ * Created by dixant on 20/04/17.
  */
-public class ObjectAdapter {
+public class TaskHistoryEntityAdapter {
     public static TaskHistoryEntity adapt(KafkaTaskDetails kafkaTaskDetails) {
         TaskHistoryEntity entity = new TaskHistoryEntity();
         entity.setJobId(kafkaTaskDetails.getJobId());
