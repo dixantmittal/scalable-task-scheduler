@@ -6,11 +6,19 @@ import com.ixigo.dbmapper.entity.TaskHistoryEntity;
 import com.ixigo.entity.KafkaTaskDetails;
 import com.ixigo.entity.RetryJobDetails;
 import com.ixigo.enums.Status;
+import com.ixigo.exception.ServiceException;
+import com.ixigo.httpclient.HttpMethod;
+import com.ixigo.httpclient.HttpMode;
+import com.ixigo.httpclient.JobSchedulerHttpUtils;
+import com.ixigo.httpclient.ServerDetails;
+import com.ixigo.taskexecutors.schedulercommons.AddTaskResponse;
 import com.ixigo.utils.IxigoDateUtils;
-import com.ixigo.utils.ObjectAdapter;
+import com.ixigo.utils.adapter.AddTaskWithJobIdRequestAdapter;
+import com.ixigo.utils.adapter.TaskHistoryEntityAdapter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 
 /**
@@ -22,13 +30,16 @@ public abstract class AbstractTaskExecutor implements ITaskExecutor {
     @Autowired
     ITaskDao taskDao;
 
+    @Autowired
+    ServerDetails serverDetails;
+
     public abstract Boolean process(String meta) throws JsonSyntaxException;
 
     @Override
     public void execute(KafkaTaskDetails taskDetails) {
         log.debug("Job received by Task Executor. [JOB-ID]: {}", taskDetails.getJobId());
         // create a task history object
-        TaskHistoryEntity taskHistory = ObjectAdapter.adapt(taskDetails);
+        TaskHistoryEntity taskHistory = TaskHistoryEntityAdapter.adapt(taskDetails);
         try {
 
             // perform the business logic of the task
@@ -79,12 +90,25 @@ public abstract class AbstractTaskExecutor implements ITaskExecutor {
         // set new scheduled time
         metadata.setScheduledTime(newScheduledTime);
 
-        //TODO call scheduling service to reschedule
-
         // add new time to task history
         taskHistory.setNewScheduledTime(IxigoDateUtils.dateToString(newScheduledTime));
         log.debug("Job rescheduled. [JOB-ID]: {}. [NEW TIME]: {}", metadata.getJobId(), taskHistory.getNewScheduledTime());
 
         taskHistory.setRemarks("Retrying task");
+
+        try {
+            JobSchedulerHttpUtils.processHttpRequest(
+                    JobSchedulerHttpUtils.getBaseURI(HttpMode.HTTP,
+                            serverDetails.getServerIp(),
+                            serverDetails.getServerPort(),
+                            serverDetails.getApiUri()),
+                    AddTaskResponse.class,
+                    AddTaskWithJobIdRequestAdapter.adapt(metadata),
+                    HttpMethod.POST
+            );
+        } catch (ServiceException | IOException e) {
+            log.error("Could not add task to job scheduler for retry. Exception: ", e);
+            taskHistory.setRemarks("Could not add task to job scheduler for retry.");
+        }
     }
 }
