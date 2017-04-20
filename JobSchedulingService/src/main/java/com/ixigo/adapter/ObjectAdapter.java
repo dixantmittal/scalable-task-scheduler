@@ -1,13 +1,11 @@
 package com.ixigo.adapter;
 
-import com.ixigo.constants.CommonConstants;
 import com.ixigo.entity.JobSchedulingDetails;
 import com.ixigo.exception.ServiceException;
 import com.ixigo.exception.codes.ServiceExceptionCodes;
 import com.ixigo.request.AddTaskRequest;
 import com.ixigo.utils.IxigoDateUtils;
-
-import java.text.ParseException;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Created by dixant on 27/03/17.
@@ -17,7 +15,6 @@ public class ObjectAdapter {
         JobSchedulingDetails jobDetails = new JobSchedulingDetails();
         jobDetails.setTaskType(request.getTaskType());
         jobDetails.setTaskMetadata(request.getTaskMetadata());
-        jobDetails.setPriority(Integer.parseInt(request.getPriority()));
         jobDetails.setRetryJobDetails(request.getRetryJobDetails());
 
         try {
@@ -25,6 +22,9 @@ public class ObjectAdapter {
         } catch (Exception e) {
             throw new ServiceException(ServiceExceptionCodes.DATE_FORMAT_EXCEPTION.code(),
                     ServiceExceptionCodes.DATE_FORMAT_EXCEPTION.message());
+        }
+        if (StringUtils.isNotBlank(request.getPriority())) {
+            jobDetails.setPriority(Integer.parseInt(request.getPriority()));
         }
         return jobDetails;
     }
