@@ -1,18 +1,19 @@
 package com.ixigo.httpclient;
 
-import com.ixigo.common.core.exception.HttpTransportException;
-import com.ixigo.common.core.transport.HttpSender;
 import com.ixigo.constants.RestURIConstants;
+import com.ixigo.exception.ExceptionResponse;
 import com.ixigo.exception.ServiceException;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
-import org.json.simple.JSONObject;
+import org.json.JSONObject;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,47 +22,59 @@ import java.util.Map;
  */
 @Slf4j
 public class JobSchedulerHttpUtils {
-    private static HttpSender httpSender = HttpSender.newInstance();
-
-    private static String executeHttpMethod(String baseURI,
-                                            Map<String, String> parameters,
-                                            Map<String, String> header,
-                                            HttpMethod method) throws ServiceException, HttpTransportException {
-        String result;
-        switch (method) {
-            case GET:
-                result = httpSender.executeGet(baseURI, parameters, header);
-                break;
-            case PUT:
-                result = httpSender.executePut(baseURI, createStringEntity(parameters), null, header);
-                break;
-            case POST:
-                result = httpSender.executePostNotForm(baseURI, createStringEntity(parameters), null, header);
-                break;
-            default:
-                throw new UnsupportedOperationException(
-                        "Server doesn't support http method: " + method);
+    private static HttpResponse<JsonNode> executeHttpMethod(String baseURI,
+                                                            Map<String, Object> parameters,
+                                                            Map<String, String> headers,
+                                                            HttpMethod method) throws ServiceException {
+        try {
+            switch (method) {
+                case GET:
+                    return Unirest.get(baseURI)
+                            .headers(headers)
+                            .queryString(parameters)
+                            .asJson();
+                case PUT:
+                    return Unirest.put(baseURI)
+                            .headers(headers)
+                            .body(new JSONObject(parameters))
+                            .asJson();
+                case POST:
+                    return Unirest.post(baseURI)
+                            .headers(headers)
+                            .body(new JSONObject(parameters))
+                            .asJson();
+                case DELETE:
+                    return Unirest.delete(baseURI)
+                            .headers(headers)
+                            .queryString(parameters)
+                            .asJson();
+                default:
+                    throw new UnsupportedOperationException(
+                            "Server doesn't support http method: " + method);
+            }
+        } catch (UnirestException ue) {
+            throw new UnsupportedOperationException(
+                    "Server doesn't support http method: " + method);
         }
-        return result;
     }
 
-    private static <T> Map<String, String> getParams(T request) {
-        Map<String, String> map = new HashMap<>();
+    private static <T> Map<String, Object> getParams(T request) {
+        Map<String, Object> map;
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationConfig.Feature.FAIL_ON_EMPTY_BEANS, false);
-        map = (Map<String, String>) mapper.convertValue(request, HashMap.class);
+        map = mapper.convertValue(request, HashMap.class);
         return map;
     }
 
     private static Map<String, String> getDefaultHeader() {
 
-        Map<String, String> header = new HashMap<>();
-        header.put(RequestHeaders.CONTENT_TYPE.toString(),
+        Map<String, String> headers = new HashMap<>();
+        headers.put(RequestHeaders.CONTENT_TYPE.toString(),
                 RestURIConstants.APPLICATION_JSON);
-        header.put(RequestHeaders.ACCEPT.toString(),
+        headers.put(RequestHeaders.ACCEPT.toString(),
                 RestURIConstants.APPLICATION_JSON);
 
-        return header;
+        return headers;
     }
 
     public static String getBaseURI(HttpMode httpMode, String serverIP, String port, String uri) {
@@ -73,32 +86,23 @@ public class JobSchedulerHttpUtils {
                 .append(uri).toString();
     }
 
-    private static String createStringEntity(Map<String, String> params) {
-
-        JSONObject keyArg = new JSONObject();
-        for (Map.Entry<String, String> pEntry : params.entrySet()) {
-            keyArg.put(pEntry.getKey(), pEntry.getValue());
-        }
-        try {
-            return new String(keyArg.toJSONString().getBytes("UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
     public static <T, R> R processHttpRequest(String baseURI, Class<R> responseType, T request, HttpMethod method)
-            throws HttpTransportException, IOException {
+            throws IOException {
 
         final Map<String, String> headers = getDefaultHeader();
-        final Map<String, String> parameters = getParams(request);
+        final Map<String, Object> parameters = getParams(request);
 
-        String result = executeHttpMethod(baseURI, parameters, headers, method);
-        if (StringUtils.isBlank(result)) {
+        HttpResponse<JsonNode> result = executeHttpMethod(baseURI, parameters, headers, method);
+        if (result == null) {
             return null;
         }
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        return mapper.readValue(result, responseType);
+        if (result.getStatus() != 200) {
+            ExceptionResponse exceptionResponse = mapper.readValue(result.getBody().toString(), ExceptionResponse.class);
+            throw new ServiceException(exceptionResponse.getCode(), exceptionResponse.getMessage());
+
+        }
+        return mapper.readValue(result.getBody().toString(), responseType);
     }
 }
