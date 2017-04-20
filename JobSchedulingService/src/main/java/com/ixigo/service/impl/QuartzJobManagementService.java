@@ -2,13 +2,12 @@ package com.ixigo.service.impl;
 
 import com.ixigo.entity.JobSchedulingDetails;
 import com.ixigo.exception.InternalServerException;
+import com.ixigo.exception.ServiceException;
+import com.ixigo.exception.codes.ServiceExceptionCodes;
 import com.ixigo.factory.QuartzJobBuilder;
 import com.ixigo.service.IJobManagementService;
 import lombok.extern.slf4j.Slf4j;
-import org.quartz.JobDetail;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.Trigger;
+import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +32,11 @@ public class QuartzJobManagementService implements IJobManagementService {
         Trigger jobTrigger = QuartzJobBuilder.buildTrigger(schedulingDetails);
         try {
             scheduler.scheduleJob(jobDetails, jobTrigger);
+        } catch (ObjectAlreadyExistsException jide) {
+            log.error("Job ID already exists. [JOB-ID]: {}", jobId);
+            throw new ServiceException(
+                    ServiceExceptionCodes.JOB_ID_ALREADY_PRESENT.code(),
+                    ServiceExceptionCodes.JOB_ID_ALREADY_PRESENT.message());
         } catch (SchedulerException e) {
             log.error("Scheduler exception occurred. Exception: {}", e);
             throw new InternalServerException();
