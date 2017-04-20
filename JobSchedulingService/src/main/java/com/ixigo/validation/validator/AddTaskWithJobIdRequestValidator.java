@@ -2,7 +2,7 @@ package com.ixigo.validation.validator;
 
 import com.ixigo.exception.codes.RequestValidationExceptionCodes;
 import com.ixigo.request.AddTaskWithJobIdRequest;
-import com.ixigo.validation.AddTaskRequestValidation;
+import com.ixigo.validation.AddTaskWithJobIdRequestValidation;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.validation.ConstraintValidator;
@@ -11,21 +11,21 @@ import javax.validation.ConstraintValidatorContext;
 /**
  * Created by dixant on 04/04/17.
  */
-public class AddTaskWithJobIdRequestValidator implements ConstraintValidator<AddTaskRequestValidation, AddTaskWithJobIdRequest> {
+public class AddTaskWithJobIdRequestValidator implements ConstraintValidator<AddTaskWithJobIdRequestValidation, AddTaskWithJobIdRequest> {
 
-    private void addConstraintViolation (ConstraintValidatorContext context,
-                                         String requestExceptionCodes) {
+    private void addConstraintViolation(ConstraintValidatorContext context,
+                                        String requestExceptionCodes) {
         context.disableDefaultConstraintViolation();
         context.buildConstraintViolationWithTemplate(requestExceptionCodes)
                 .addConstraintViolation();
     }
 
     @Override
-    public void initialize (AddTaskRequestValidation constraintAnnotation) {
+    public void initialize(AddTaskWithJobIdRequestValidation constraintAnnotation) {
     }
 
     @Override
-    public boolean isValid (AddTaskWithJobIdRequest request, ConstraintValidatorContext context) {
+    public boolean isValid(AddTaskWithJobIdRequest request, ConstraintValidatorContext context) {
         if (StringUtils.isBlank(request.getJobId())) {
             addConstraintViolation(context, RequestValidationExceptionCodes.JOB_ID_IS_BLANK.name());
             return false;

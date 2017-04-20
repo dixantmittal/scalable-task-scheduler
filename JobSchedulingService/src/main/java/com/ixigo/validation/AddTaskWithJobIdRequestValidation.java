@@ -1,6 +1,6 @@
 package com.ixigo.validation;
 
-import com.ixigo.validation.validator.AddTaskRequestValidator;
+import com.ixigo.validation.validator.AddTaskWithJobIdRequestValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -11,13 +11,13 @@ import java.lang.annotation.*;
  */
 @Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = {AddTaskRequestValidator.class})
+@Constraint(validatedBy = {AddTaskWithJobIdRequestValidator.class})
 @Documented
 public @interface AddTaskWithJobIdRequestValidation {
-    String message () default
+    String message() default
             "{com.ixigo.validation.AddTaskWithJobIdRequestValidation.message}";
 
-    Class<?>[] groups () default {};
+    Class<?>[] groups() default {};
 
-    Class<? extends Payload>[] payload () default {};
+    Class<? extends Payload>[] payload() default {};
 }
