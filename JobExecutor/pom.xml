@@ -200,16 +200,4 @@
         </plugins>
     </build>
 
-    <profiles>
-        <profile>
-            <id>dev</id>
-        </profile>
-        <profile>
-            <id>prod</id>
-        </profile>
-        <profile>
-            <id>test</id>
-        </profile>
-    </profiles>
-
 </project>

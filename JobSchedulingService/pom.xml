@@ -131,8 +131,8 @@
                         <profile>prod</profile>
                     </profiles>
                     <!--<jvmArguments>-->
-                        <!-- -Xdebug-->
-                        <!-- -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5007-->
+                    <!-- -Xdebug-->
+                    <!-- -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5007-->
                     <!--</jvmArguments>-->
                 </configuration>
             </plugin>
@@ -164,17 +164,5 @@
             </plugin>
         </plugins>
     </build>
-
-    <profiles>
-        <profile>
-            <id>dev</id>
-        </profile>
-        <profile>
-            <id>prod</id>
-        </profile>
-        <profile>
-            <id>test</id>
-        </profile>
-    </profiles>
 
 </project>

@@ -29,7 +29,7 @@
     <!-- Task scheduler for Cache Update. -->
     <task:scheduled-tasks scheduler="cacheUpdateScheduler">
         <task:scheduled ref="cacheBuilderImpl" method="buildCaches"
-                        cron="0 0/${jobExecutor.cacheUpdater.delay} 0-23 * * *"/>
+                        cron="0 0/${jobSchedulor.cacheUpdater.delay} 0-23 * * *"/>
     </task:scheduled-tasks>
     <task:scheduler id="cacheUpdateScheduler" pool-size="1"/>
 
