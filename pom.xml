@@ -5,7 +5,7 @@
 
     <groupId>com.ixigo</groupId>
     <artifactId>IxigoJobScheduler</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0-RELEASE</version>
     <packaging>pom</packaging>
     <name>Ixigo Job Scheduler</name>
     <description>Ixigo Job Scheduler</description>

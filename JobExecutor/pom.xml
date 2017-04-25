@@ -19,13 +19,13 @@
         <dependency>
             <groupId>com.ixigo</groupId>
             <artifactId>JobSchedulerCommons</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0-RELEASE</version>
         </dependency>
 
         <dependency>
             <groupId>com.ixigo</groupId>
             <artifactId>KafkaQueuingService</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0-RELEASE</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
@@ -63,7 +63,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-tomcat</artifactId>
             <version>1.5.3.RELEASE</version>
-            <!--<scope>provided</scope>-->
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -151,6 +151,12 @@
             <version>2.0.5</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.rabbitmq</groupId>
+            <artifactId>amqp-client</artifactId>
+            <version>4.1.0</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -166,10 +172,18 @@
                         <profile>prod</profile>
                     </profiles>
                     <!--<jvmArguments>-->
-                        <!-- -Xdebug-->
-                        <!-- -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5007-->
+                    <!-- -Xdebug-->
+                    <!-- -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5007-->
                     <!--</jvmArguments>-->
+                    <mainClass>com.ixigo.ApplicationRunner</mainClass>
                 </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -188,13 +202,6 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.5</version>
                 <configuration>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>com.ixigo.ApplicationRunner</mainClass>
-                        </manifest>
-                    </archive>
                 </configuration>
             </plugin>
         </plugins>

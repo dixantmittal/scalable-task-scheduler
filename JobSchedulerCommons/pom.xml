@@ -5,7 +5,7 @@
 
     <groupId>com.ixigo</groupId>
     <artifactId>JobSchedulerCommons</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0-RELEASE</version>
     <modelVersion>4.0.0</modelVersion>
 
     <properties>
