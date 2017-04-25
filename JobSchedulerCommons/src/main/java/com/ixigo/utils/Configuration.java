@@ -9,7 +9,6 @@ import com.ixigo.exception.codes.CommonExceptionCodes;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Created by dixant on 04/04/17.
@@ -24,13 +23,13 @@ public class Configuration {
         return configCache.getOrDefault(configType, new HashMap<String, String>());
     }
 
-    public static Optional<String> getProperty(String configType, String configKey) {
+    public static String getProperty(String configType, String configKey) {
         Map<String, String> configMap = getConfigMap(configType);
-        return Optional.ofNullable(configMap.get(configKey));
+        return configMap.get(configKey);
     }
-    
+
     public static String getGlobalProperty(IConfigurationConstants config) {
-        Optional<String> value = getProperty(CommonConstants.GLOBAL_PROPERTY, config.key());
-        return value.orElse(config.defaultValue());
+        String value = getProperty(CommonConstants.GLOBAL_PROPERTY, config.key());
+        return (value != null) ? value : config.defaultValue();
     }
 }
