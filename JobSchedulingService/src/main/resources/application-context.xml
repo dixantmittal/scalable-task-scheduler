@@ -49,7 +49,7 @@
     <!-- MyBatis related beans -->
     <bean id="sqlSessionFactoryMybatis" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="dataSource"/>
-        <property name="configLocation" value="classpath:myBatis/sqlmap-config.xml"/>
+        <property name="configLocation" value="classpath:mybatis/sqlmap-config.xml"/>
     </bean>
 
     <bean name="myBatisDB" id="myBatisDB"

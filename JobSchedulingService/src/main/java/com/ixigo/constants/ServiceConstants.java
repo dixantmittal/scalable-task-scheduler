@@ -10,7 +10,6 @@ public interface ServiceConstants {
     String TRIGGER_IDENTIFIER = "TRIGGER";
     String DEFAULT_GROUP_ID = "DEFAULT_GROUP";
     String JOB_ID = "JOB_ID";
-    int MAX_REFIRE_LIMIT = 5;
     String TOPIC_NAME_CACHE_PROPERTY = "topic_name_by_task_type";
     String PRODUCER_PROPERTIES_CACHE = "kafka_producer_properties";
 }
