@@ -72,7 +72,7 @@ public class CacheBuilderImpl implements ICacheBuilder {
     private void buildConsumerPropertiesCache() {
         final ConsumerPropertiesCache cache = new ConsumerPropertiesCache();
         Map<String, String> configMap = Configuration.getConfigMap(ServiceConstants.CONSUMER_PROPERTIES_CACHE);
-        if (configMap == null) {
+        if (configMap == null || configMap.size() == 0) {
             log.error("Consumer Properties not found in the db. Please contact admin.");
             throw new InternalServerException();
         }
