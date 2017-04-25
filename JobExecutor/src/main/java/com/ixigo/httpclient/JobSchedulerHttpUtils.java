@@ -105,4 +105,23 @@ public class JobSchedulerHttpUtils {
         }
         return mapper.readValue(result.getBody().toString(), responseType);
     }
+
+    // More general HTTP Sender
+    public static String processHttpRequest(String baseURI, Map<String, Object> params, HttpMethod method)
+            throws IOException {
+
+        final Map<String, String> headers = getDefaultHeader();
+
+        HttpResponse<JsonNode> result = executeHttpMethod(baseURI, params, headers, method);
+        if (result == null) {
+            return null;
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        if (result.getStatus() != 200) {
+            ExceptionResponse exceptionResponse = mapper.readValue(result.getBody().toString(), ExceptionResponse.class);
+            throw new ServiceException(exceptionResponse.getCode(), exceptionResponse.getMessage());
+        }
+        return result.getBody().toString();
+    }
 }
