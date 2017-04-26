@@ -73,6 +73,7 @@ public class IxigoKafkaConsumer extends Thread {
                 }
                 taskExecutor.execute(task.value());
             }
+            consumer.commitSync();
         }
         // when the shutdown is called, close the consumer connection.
         consumer.close();
