@@ -11,4 +11,5 @@ import org.hibernate.validator.constraints.NotBlank;
 public class DeleteTaskRequest {
     @NotBlank(message = RequestValidationExceptionConstants.JOB_ID_IS_BLANK)
     private String jobId;
+    private Boolean canRetry;
 }

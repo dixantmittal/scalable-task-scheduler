@@ -24,7 +24,7 @@ import java.util.Map;
  * Created by dixant on 18/04/17.
  */
 @Slf4j
-public class JobSchedulerHttpUtils {
+public class HttpUtils {
     private static ObjectMapper mapper;
 
     static {
@@ -83,19 +83,10 @@ public class JobSchedulerHttpUtils {
         return headers;
     }
 
-    public static String getBaseURI(String httpMode, String serverIP, String port, String uri) {
-        return new StringBuilder()
-                .append(httpMode.toString())
-                .append(serverIP)
-                .append(":")
-                .append(port)
-                .append(uri).toString();
-    }
-
     public static <T, R> R processHttpRequest(String completeURL,
                                               Class<R> responseType,
                                               T request,
-                                              HttpMethod method) throws IOException {
+                                              HttpMethod method) {
         return processHttpRequest(completeURL,
                 responseType,
                 request,
@@ -107,7 +98,7 @@ public class JobSchedulerHttpUtils {
                                               Class<R> responseType,
                                               T request,
                                               Map<String, String> headers,
-                                              HttpMethod method) throws IOException {
+                                              HttpMethod method) {
 
         final Map<String, Object> parameters = getParams(request);
         try {
@@ -146,5 +137,46 @@ public class JobSchedulerHttpUtils {
                     CommonExceptionCodes.HTTP_CLIENT_EXCEPTION.message() + "Error: " + exceptionResponse);
         }
         return result.getBody().toString();
+    }
+
+    public static class URLBuilder {
+        private String httpMode;
+        private String serverIP;
+        private String port;
+        private String uri;
+
+        public static URLBuilder newURL() {
+            return new URLBuilder();
+        }
+
+        public URLBuilder withServerIp(String serverIp) {
+            serverIP = serverIp;
+            return this;
+        }
+
+        public URLBuilder withServerPort(String port) {
+            this.port = port;
+            return this;
+        }
+
+        public URLBuilder withHttpMode(String httpMode) {
+            this.httpMode = httpMode;
+            return this;
+        }
+
+        public URLBuilder withURI(String uri) {
+            this.uri = uri;
+            return this;
+        }
+
+        public String build() {
+            return new StringBuilder()
+                    .append(httpMode)
+                    .append(serverIP)
+                    .append(":")
+                    .append(port)
+                    .append(uri)
+                    .toString();
+        }
     }
 }

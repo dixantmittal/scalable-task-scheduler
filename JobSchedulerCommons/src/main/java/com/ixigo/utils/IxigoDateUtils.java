@@ -14,6 +14,9 @@ public class IxigoDateUtils extends DateUtils {
     private static DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern(CommonConstants.DATE_PATTERN);
 
     public static String dateToString(LocalDateTime date) {
+        if (date == null) {
+            return null;
+        }
         return date.format(dateFormat);
     }
 
