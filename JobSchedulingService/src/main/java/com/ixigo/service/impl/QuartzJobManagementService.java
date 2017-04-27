@@ -3,7 +3,7 @@ package com.ixigo.service.impl;
 import com.ixigo.entity.JobSchedulingDetails;
 import com.ixigo.exception.InternalServerException;
 import com.ixigo.exception.ServiceException;
-import com.ixigo.exception.codes.ServiceExceptionCodes;
+import com.ixigo.exception.codes.jobschedulingservice.ServiceExceptionCodes;
 import com.ixigo.factory.QuartzJobBuilder;
 import com.ixigo.service.IJobManagementService;
 import lombok.extern.slf4j.Slf4j;

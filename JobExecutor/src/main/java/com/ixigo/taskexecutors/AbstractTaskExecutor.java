@@ -11,7 +11,7 @@ import com.ixigo.httpclient.HttpMethod;
 import com.ixigo.httpclient.HttpMode;
 import com.ixigo.httpclient.JobSchedulerHttpUtils;
 import com.ixigo.httpclient.ServerDetails;
-import com.ixigo.taskexecutors.schedulercommons.AddTaskResponse;
+import com.ixigo.response.jobschedulingservice.AddTaskResponse;
 import com.ixigo.utils.IxigoDateUtils;
 import com.ixigo.utils.adapter.AddTaskWithJobIdRequestAdapter;
 import com.ixigo.utils.adapter.TaskHistoryEntityAdapter;

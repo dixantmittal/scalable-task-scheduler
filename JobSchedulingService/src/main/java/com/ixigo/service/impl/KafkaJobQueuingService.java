@@ -2,7 +2,7 @@ package com.ixigo.service.impl;
 
 import com.ixigo.constants.ServiceConstants;
 import com.ixigo.entity.KafkaTaskDetails;
-import com.ixigo.publisher.KafkaTaskPublisher;
+import com.ixigo.publisher.IKafkaTaskPublisher;
 import com.ixigo.service.IJobQueuingService;
 import com.ixigo.utils.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ import java.util.Map;
 public class KafkaJobQueuingService implements IJobQueuingService {
 
     @Autowired
-    private KafkaTaskPublisher kafkaTaskPublisher;
+    private IKafkaTaskPublisher kafkaTaskPublisher;
 
     @Override
     public Boolean addJobToExecutionQueue(Map<String, Object> jobDataMap) {

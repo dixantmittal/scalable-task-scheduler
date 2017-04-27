@@ -1,7 +1,7 @@
 package com.ixigo.utils.adapter;
 
 import com.ixigo.entity.KafkaTaskDetails;
-import com.ixigo.taskexecutors.schedulercommons.AddTaskWithJobIdRequest;
+import com.ixigo.request.jobschedulingservice.AddTaskWithJobIdRequest;
 import com.ixigo.utils.IxigoDateUtils;
 
 /**

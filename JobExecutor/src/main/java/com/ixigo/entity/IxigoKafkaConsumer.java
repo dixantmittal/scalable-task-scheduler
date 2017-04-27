@@ -2,7 +2,7 @@ package com.ixigo.entity;
 
 import com.ixigo.constants.ConfigurationConstants;
 import com.ixigo.exception.ServiceException;
-import com.ixigo.exception.codes.ServiceExceptionCodes;
+import com.ixigo.exception.codes.jobexecutor.ServiceExceptionCodes;
 import com.ixigo.factory.TaskExecutorFactory;
 import com.ixigo.taskexecutors.ITaskExecutor;
 import com.ixigo.utils.Configuration;

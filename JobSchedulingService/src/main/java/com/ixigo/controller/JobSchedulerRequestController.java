@@ -1,16 +1,14 @@
 package com.ixigo.controller;
 
 import com.ixigo.cache.service.ICacheBuilder;
-import com.ixigo.constants.RestURIConstants;
+import com.ixigo.constants.jobschedulingservice.RestURIConstants;
 import com.ixigo.enums.SchedulerMode;
 import com.ixigo.enums.Status;
 import com.ixigo.exception.RequestValidationException;
-import com.ixigo.exception.codes.RequestValidationExceptionCodes;
-import com.ixigo.request.AddTaskRequest;
-import com.ixigo.request.AddTaskWithJobIdRequest;
-import com.ixigo.request.DeleteTaskRequest;
-import com.ixigo.request.StopSchedulerRequest;
-import com.ixigo.response.*;
+import com.ixigo.exception.codes.jobschedulingservice.RequestValidationExceptionCodes;
+import com.ixigo.request.jobschedulingservice.*;
+import com.ixigo.response.ReloadCacheResponse;
+import com.ixigo.response.jobschedulingservice.*;
 import com.ixigo.service.IJobSchedulerRequestService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

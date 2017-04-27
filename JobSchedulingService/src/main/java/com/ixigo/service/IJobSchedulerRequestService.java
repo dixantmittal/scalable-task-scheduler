@@ -1,13 +1,13 @@
 package com.ixigo.service;
 
-import com.ixigo.request.AddTaskRequest;
-import com.ixigo.request.AddTaskWithJobIdRequest;
-import com.ixigo.request.DeleteTaskRequest;
-import com.ixigo.request.StopSchedulerRequest;
-import com.ixigo.response.AddTaskResponse;
-import com.ixigo.response.DeleteTaskResponse;
-import com.ixigo.response.StartSchedulerResponse;
-import com.ixigo.response.StopSchedulerResponse;
+import com.ixigo.request.jobschedulingservice.AddTaskRequest;
+import com.ixigo.request.jobschedulingservice.AddTaskWithJobIdRequest;
+import com.ixigo.request.jobschedulingservice.DeleteTaskRequest;
+import com.ixigo.request.jobschedulingservice.StopSchedulerRequest;
+import com.ixigo.response.jobschedulingservice.AddTaskResponse;
+import com.ixigo.response.jobschedulingservice.DeleteTaskResponse;
+import com.ixigo.response.jobschedulingservice.StartSchedulerResponse;
+import com.ixigo.response.jobschedulingservice.StopSchedulerResponse;
 
 /**
  * Created by dixant on 27/03/17.

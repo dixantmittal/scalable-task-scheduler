@@ -1,6 +1,6 @@
 package com.ixigo.entity;
 
-import com.ixigo.cache.enums.ConfigurationConstants;
+import com.ixigo.constants.ConfigurationConstants;
 import com.ixigo.factory.JobQueuingServiceProvider;
 import com.ixigo.service.IJobQueuingService;
 import com.ixigo.utils.Configuration;

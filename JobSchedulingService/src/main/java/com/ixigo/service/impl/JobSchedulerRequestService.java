@@ -1,20 +1,20 @@
 package com.ixigo.service.impl;
 
-import com.ixigo.adapter.ObjectAdapter;
+import com.ixigo.utils.adapter.JobSchedulingDetailsAdapter;
 import com.ixigo.constants.ServiceConstants;
 import com.ixigo.entity.JobSchedulingDetails;
 import com.ixigo.enums.Status;
 import com.ixigo.exception.InternalServerException;
 import com.ixigo.exception.ServiceException;
-import com.ixigo.exception.codes.ServiceExceptionCodes;
-import com.ixigo.request.AddTaskRequest;
-import com.ixigo.request.AddTaskWithJobIdRequest;
-import com.ixigo.request.DeleteTaskRequest;
-import com.ixigo.request.StopSchedulerRequest;
-import com.ixigo.response.AddTaskResponse;
-import com.ixigo.response.DeleteTaskResponse;
-import com.ixigo.response.StartSchedulerResponse;
-import com.ixigo.response.StopSchedulerResponse;
+import com.ixigo.exception.codes.jobschedulingservice.ServiceExceptionCodes;
+import com.ixigo.request.jobschedulingservice.AddTaskRequest;
+import com.ixigo.request.jobschedulingservice.AddTaskWithJobIdRequest;
+import com.ixigo.request.jobschedulingservice.DeleteTaskRequest;
+import com.ixigo.request.jobschedulingservice.StopSchedulerRequest;
+import com.ixigo.response.jobschedulingservice.AddTaskResponse;
+import com.ixigo.response.jobschedulingservice.DeleteTaskResponse;
+import com.ixigo.response.jobschedulingservice.StartSchedulerResponse;
+import com.ixigo.response.jobschedulingservice.StopSchedulerResponse;
 import com.ixigo.service.IJobManagementService;
 import com.ixigo.service.IJobSchedulerRequestService;
 import lombok.extern.slf4j.Slf4j;
@@ -38,14 +38,14 @@ public class JobSchedulerRequestService implements IJobSchedulerRequestService {
     IJobManagementService jobManagementService;
 
     public AddTaskResponse addTask(AddTaskRequest request) {
-        JobSchedulingDetails jobDetails = ObjectAdapter.adapt(request);
+        JobSchedulingDetails jobDetails = JobSchedulingDetailsAdapter.adapt(request);
         String jobId = jobManagementService.createJob(jobDetails);
         log.debug("Job added to Job Scheduler. [JOB-ID]: {}", jobId);
         return new AddTaskResponse(Status.SUCCESS, jobId);
     }
 
     public AddTaskResponse addTask(AddTaskWithJobIdRequest request) {
-        JobSchedulingDetails jobDetails = ObjectAdapter.adapt(request);
+        JobSchedulingDetails jobDetails = JobSchedulingDetailsAdapter.adapt(request);
         String jobId = jobManagementService.createJobWithJobId(jobDetails, request.getJobId());
         log.debug("Job added to Job Scheduler. [JOB-ID]: {}", jobId);
         return new AddTaskResponse(Status.SUCCESS, jobId);

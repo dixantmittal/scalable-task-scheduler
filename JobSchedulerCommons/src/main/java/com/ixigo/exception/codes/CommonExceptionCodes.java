@@ -7,7 +7,8 @@ public enum CommonExceptionCodes {
     INTERNAL_SERVER_EXCEPTION("ER-1100", "Internal Server Exception"),
     REQUEST_VALIDATION_EXCEPTION("ER-2100", "Request Validation Exception"),
     SERVICE_EXCEPTION("ER-3100", "Service Exception"),
-    CONFIG_CACHE_NOT_FOUND("ER-4100", "Config cache not found.");
+    CONFIG_CACHE_NOT_FOUND("ER-4100", "Config cache not found."),
+    HTTP_CLIENT_EXCEPTION("ER-5100", "Http client exception occurred. ");
 
 
     String code;

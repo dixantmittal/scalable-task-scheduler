@@ -1,17 +1,17 @@
 package com.ixigo.controller;
 
 import com.ixigo.cache.service.ICacheBuilder;
-import com.ixigo.constants.RestURIConstants;
+import com.ixigo.constants.jobexecutor.RestURIConstants;
 import com.ixigo.enums.Status;
 import com.ixigo.exception.RequestValidationException;
-import com.ixigo.exception.codes.RequestValidationExceptionCodes;
-import com.ixigo.request.AddConsumersRequest;
-import com.ixigo.request.RemoveConsumersRequest;
-import com.ixigo.request.StopAllConsumersRequest;
-import com.ixigo.response.AddConsumersResponse;
+import com.ixigo.exception.codes.jobschedulingservice.RequestValidationExceptionCodes;
+import com.ixigo.request.jobexecutor.AddConsumersRequest;
+import com.ixigo.request.jobexecutor.RemoveConsumersRequest;
+import com.ixigo.request.jobexecutor.StopAllConsumersRequest;
+import com.ixigo.response.jobexecutor.AddConsumersResponse;
 import com.ixigo.response.ReloadCacheResponse;
-import com.ixigo.response.RemoveConsumersResponse;
-import com.ixigo.response.StopConsumersResponse;
+import com.ixigo.response.jobexecutor.RemoveConsumersResponse;
+import com.ixigo.response.jobexecutor.StopConsumersResponse;
 import com.ixigo.service.KafkaRequestService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
