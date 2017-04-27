@@ -11,12 +11,14 @@
     <mvc:annotation-driven/>
     <mvc:resources mapping="/resources/**" location="classpath:/resources"/>
 
-    <bean id="taskExecutorPlaceholderConfig" class="com.ixigo.utils.SpringPropertiesUtil">
-        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
-        <property name="locations">
-            <value>classpath*:application.properties</value>
-        </property>
-    </bean>
+    <!--<bean id="taskExecutorPlaceholderConfig" class="com.ixigo.utils.SpringPropertiesUtil">-->
+    <!--<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>-->
+    <!--<property name="locations">-->
+    <!--<value>classpath*:application.properties</value>-->
+    <!--</property>-->
+    <!--</bean>-->
+
+    <bean id="cacheBuilderImpl" class="com.ixigo.cache.CacheBuilderImpl"/>
 
     <!-- Task scheduler for Cache Update. -->
     <task:scheduled-tasks scheduler="cacheUpdateScheduler">
