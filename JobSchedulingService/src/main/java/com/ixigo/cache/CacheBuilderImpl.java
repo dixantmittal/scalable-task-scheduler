@@ -2,7 +2,7 @@ package com.ixigo.cache;
 
 import com.ixigo.cache.impl.ConfigCache;
 import com.ixigo.cache.service.ICacheBuilder;
-import com.ixigo.constants.ServiceConstants;
+import com.ixigo.constants.jobschedulingservice.ServiceConstants;
 import com.ixigo.dao.IConfigurationDao;
 import com.ixigo.dbmapper.entity.ConfigDetails;
 import com.ixigo.exception.InternalServerException;
@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.ixigo.constants.jobschedulingservice.ServiceConstants.REQUEST_CONSUMER_PROPERTIES_CACHE;
 
 /**
  * Created by dixant on 29/03/17.
@@ -31,6 +33,7 @@ public class CacheBuilderImpl implements ICacheBuilder {
         buildConfigCache();
         buildTopicNameCache();
         buildProducerPropertiesCache();
+        buildConsumerPropertiesCache();
     }
 
     private void buildProducerPropertiesCache() {
@@ -69,5 +72,18 @@ public class CacheBuilderImpl implements ICacheBuilder {
                     .put(details.getConfigKey(), details.getConfigValue());
         }
         CacheManager.getInstance().putCache(configCache);
+    }
+
+    private void buildConsumerPropertiesCache() {
+        final ConsumerPropertiesCache cache = new ConsumerPropertiesCache();
+        Map<String, String> configMap = Configuration.getConfigMap(REQUEST_CONSUMER_PROPERTIES_CACHE);
+        if (configMap == null || configMap.size() == 0) {
+            log.error("Consumer Properties not found in the db. Please contact admin.");
+            throw new InternalServerException();
+        }
+        for (Map.Entry<String, String> entry : configMap.entrySet()) {
+            cache.put(entry.getKey(), entry.getValue());
+        }
+        CacheManager.getInstance().putCache(cache);
     }
 }

@@ -1,6 +1,6 @@
 package com.ixigo.factory;
 
-import com.ixigo.constants.ServiceConstants;
+import com.ixigo.constants.jobschedulingservice.ServiceConstants;
 import com.ixigo.entity.AddToExecutionQueueJob;
 import com.ixigo.entity.JobSchedulingDetails;
 import com.ixigo.utils.IDGenerationUtils;

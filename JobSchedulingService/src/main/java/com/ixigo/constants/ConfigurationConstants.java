@@ -1,12 +1,13 @@
 package com.ixigo.constants;
 
-import com.ixigo.constants.IConfigurationConstants;
-
 /**
  * Created by dixant on 29/03/17.
  */
 public enum ConfigurationConstants implements IConfigurationConstants {
 
+    REQUEST_CONSUMER_THREAD_SLEEP_TIME("request.consumer.thread.sleeptime", "1000"),
+    REQUEST_CONSUMER_POLL_TIME("request.consumer.poll.time", "10"),
+    REQUEST_CONSUMER_TOPIC_NAME("request.consumer.topic.name", "REQUEST_QUEUE"),
     MAX_REFIRE_LIMIT("quartz.refire.limit.max", "5");
 
     private final String key;

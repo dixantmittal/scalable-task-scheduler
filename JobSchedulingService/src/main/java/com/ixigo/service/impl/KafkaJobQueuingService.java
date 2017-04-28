@@ -1,6 +1,6 @@
 package com.ixigo.service.impl;
 
-import com.ixigo.constants.ServiceConstants;
+import com.ixigo.constants.jobschedulingservice.ServiceConstants;
 import com.ixigo.entity.KafkaTaskDetails;
 import com.ixigo.publisher.IKafkaTaskPublisher;
 import com.ixigo.service.IJobQueuingService;

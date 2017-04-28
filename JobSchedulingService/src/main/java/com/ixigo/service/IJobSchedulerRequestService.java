@@ -13,7 +13,7 @@ import com.ixigo.response.jobschedulingservice.StopSchedulerResponse;
  * Created by dixant on 27/03/17.
  */
 public interface IJobSchedulerRequestService {
-    AddTaskResponse addTask (AddTaskRequest request);
+//    AddTaskResponse addTask (AddTaskRequest request);
 
     AddTaskResponse addTask (AddTaskWithJobIdRequest request);
 

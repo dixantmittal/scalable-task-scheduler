@@ -6,18 +6,20 @@ import com.ixigo.enums.SchedulerMode;
 import com.ixigo.enums.Status;
 import com.ixigo.exception.RequestValidationException;
 import com.ixigo.exception.codes.jobschedulingservice.RequestValidationExceptionCodes;
-import com.ixigo.request.jobschedulingservice.*;
+import com.ixigo.request.jobschedulingservice.StopSchedulerRequest;
 import com.ixigo.response.ReloadCacheResponse;
-import com.ixigo.response.jobschedulingservice.*;
+import com.ixigo.response.jobschedulingservice.StartSchedulerResponse;
+import com.ixigo.response.jobschedulingservice.StopSchedulerResponse;
 import com.ixigo.service.IJobSchedulerRequestService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.validation.ConstraintViolation;
-import javax.validation.Valid;
 import javax.validation.Validator;
 import java.util.Set;
 
@@ -37,45 +39,45 @@ public class JobSchedulerRequestController {
     @Autowired
     private ICacheBuilder cacheBuilder;
 
-    @RequestMapping(
-            value = RestURIConstants.TASK,
-            method = RequestMethod.POST,
-            produces = RestURIConstants.APPLICATION_JSON)
-    @ResponseBody
-    AddTaskResponse addTask(@RequestBody @Valid AddTaskRequest request, BindingResult results) {
-        if (results.hasErrors()) {
-            RequestValidationExceptionCodes error = RequestValidationExceptionCodes.forName(results.getAllErrors().get(0).getDefaultMessage());
-            log.error("Error occurred while adding task. Request: " + request + "\nError: " + error);
-            throw new RequestValidationException(error.code(), error.message());
-        }
-        return requestService.addTask(request);
-    }
-
-    @RequestMapping(
-            value = RestURIConstants.TASK + RestURIConstants.JOB_ID,
-            method = RequestMethod.POST,
-            produces = RestURIConstants.APPLICATION_JSON)
-    @ResponseBody
-    AddTaskResponse addTask(@RequestBody @Valid AddTaskWithJobIdRequest request, BindingResult results) {
-        if (results.hasErrors()) {
-            RequestValidationExceptionCodes error = RequestValidationExceptionCodes.forName(results.getAllErrors().get(0).getDefaultMessage());
-            log.error("Error occurred while adding task. Request: " + request + "\nError: " + error);
-            throw new RequestValidationException(error.code(), error.message());
-        }
-        return requestService.addTask(request);
-    }
-
-    @RequestMapping(
-            value = RestURIConstants.TASK,
-            method = RequestMethod.DELETE,
-            produces = RestURIConstants.APPLICATION_JSON)
-    @ResponseBody
-    DeleteTaskResponse deleteTask(@RequestParam("job-id") String jobId) {
-        DeleteTaskRequest request = new DeleteTaskRequest();
-        request.setJobId(jobId);
-        validateRequest(request);
-        return requestService.deleteTask(request);
-    }
+//    @RequestMapping(
+//            value = RestURIConstants.TASK,
+//            method = RequestMethod.POST,
+//            produces = RestURIConstants.APPLICATION_JSON)
+//    @ResponseBody
+//    AddTaskResponse addTask(@RequestBody @Valid AddTaskRequest request, BindingResult results) {
+//        if (results.hasErrors()) {
+//            RequestValidationExceptionCodes error = RequestValidationExceptionCodes.forName(results.getAllErrors().get(0).getDefaultMessage());
+//            log.error("Error occurred while adding task. Request: " + request + "\nError: " + error);
+//            throw new RequestValidationException(error.code(), error.message());
+//        }
+//        return requestService.addTask(request);
+//    }
+//
+//    @RequestMapping(
+//            value = RestURIConstants.TASK + RestURIConstants.JOB_ID,
+//            method = RequestMethod.POST,
+//            produces = RestURIConstants.APPLICATION_JSON)
+//    @ResponseBody
+//    AddTaskResponse addTask(@RequestBody @Valid AddTaskWithJobIdRequest request, BindingResult results) {
+//        if (results.hasErrors()) {
+//            RequestValidationExceptionCodes error = RequestValidationExceptionCodes.forName(results.getAllErrors().get(0).getDefaultMessage());
+//            log.error("Error occurred while adding task. Request: " + request + "\nError: " + error);
+//            throw new RequestValidationException(error.code(), error.message());
+//        }
+//        return requestService.addTask(request);
+//    }
+//
+//    @RequestMapping(
+//            value = RestURIConstants.TASK,
+//            method = RequestMethod.DELETE,
+//            produces = RestURIConstants.APPLICATION_JSON)
+//    @ResponseBody
+//    DeleteTaskResponse deleteTask(@RequestParam(value = "jobId", required = false) String jobId) {
+//        DeleteTaskRequest request = new DeleteTaskRequest();
+//        request.setJobId(jobId);
+//        validateRequest(request);
+//        return requestService.deleteTask(request);
+//    }
 
     @RequestMapping(
             value = RestURIConstants.START_SCHEDULER,
@@ -91,7 +93,7 @@ public class JobSchedulerRequestController {
             method = RequestMethod.DELETE,
             produces = RestURIConstants.APPLICATION_JSON)
     @ResponseBody
-    StopSchedulerResponse stopScheduler(@RequestParam("mode") String mode) {
+    StopSchedulerResponse stopScheduler(@RequestParam(value = "mode", required = false) String mode) {
         StopSchedulerRequest request = new StopSchedulerRequest(SchedulerMode.forName(mode));
         validateRequest(request);
         return requestService.stopScheduler(request);
