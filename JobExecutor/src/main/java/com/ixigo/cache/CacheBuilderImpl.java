@@ -5,7 +5,7 @@ import com.ixigo.cache.impl.ConsumerPropertiesCache;
 import com.ixigo.cache.impl.ConsumersCache;
 import com.ixigo.cache.impl.TaskExecutorCache;
 import com.ixigo.cache.service.ICacheBuilder;
-import com.ixigo.constants.ServiceConstants;
+import com.ixigo.constants.jobexecutor.ServiceConstants;
 import com.ixigo.dao.impl.ConfigurationDaoImpl;
 import com.ixigo.dbmapper.entity.ConfigDetails;
 import com.ixigo.exception.InternalServerException;

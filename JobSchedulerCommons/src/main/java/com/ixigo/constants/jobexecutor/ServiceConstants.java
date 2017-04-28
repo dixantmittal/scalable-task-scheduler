@@ -1,4 +1,4 @@
-package com.ixigo.constants;
+package com.ixigo.constants.jobexecutor;
 
 /**
  * Created by dixant on 06/04/17.

@@ -1,6 +1,7 @@
 package com.ixigo.httpclient;
 
 import com.ixigo.constants.jobexecutor.RestURIConstants;
+import com.ixigo.exception.GenericException;
 import com.ixigo.exception.InternalServerException;
 import com.ixigo.exception.ServiceException;
 import com.ixigo.exception.codes.CommonExceptionCodes;
@@ -9,6 +10,7 @@ import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -63,8 +65,8 @@ public class HttpUtils {
                             "Server doesn't support http method: " + method);
             }
         } catch (UnirestException ue) {
-            throw new ServiceException(CommonExceptionCodes.HTTP_CLIENT_EXCEPTION.code(),
-                    CommonExceptionCodes.HTTP_CLIENT_EXCEPTION.message() + "Unable to execute http request. Error: " + ue.getMessage());
+            throw new GenericException(CommonExceptionCodes.HTTP_CLIENT_EXCEPTION.code(),
+                    "Unable to execute http request. Error: " + ue);
         }
     }
 
@@ -134,7 +136,7 @@ public class HttpUtils {
         if (result.getStatus() != 200) {
             String exceptionResponse = result.getBody().toString();
             throw new ServiceException(CommonExceptionCodes.HTTP_CLIENT_EXCEPTION.code(),
-                    CommonExceptionCodes.HTTP_CLIENT_EXCEPTION.message() + "Error: " + exceptionResponse);
+                    exceptionResponse);
         }
         return result.getBody().toString();
     }
@@ -144,6 +146,13 @@ public class HttpUtils {
         private String serverIP;
         private String port;
         private String uri;
+
+        private URLBuilder() {
+            httpMode = "";
+            serverIP = "";
+            port = "";
+            uri = "";
+        }
 
         public static URLBuilder newURL() {
             return new URLBuilder();
@@ -170,11 +179,13 @@ public class HttpUtils {
         }
 
         public String build() {
+            String serverAddress = serverIP;
+            if (StringUtils.isNotBlank(port)) {
+                serverAddress = serverAddress + ":" + port;
+            }
             return new StringBuilder()
                     .append(httpMode)
-                    .append(serverIP)
-                    .append(":")
-                    .append(port)
+                    .append(serverAddress)
                     .append(uri)
                     .toString();
         }

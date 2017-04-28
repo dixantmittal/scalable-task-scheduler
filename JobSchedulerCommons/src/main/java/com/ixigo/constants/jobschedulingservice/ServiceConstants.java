@@ -1,4 +1,4 @@
-package com.ixigo.constants;
+package com.ixigo.constants.jobschedulingservice;
 
 /**
  * Created by dixant on 24/03/17.
@@ -12,4 +12,5 @@ public interface ServiceConstants {
     String JOB_ID = "JOB_ID";
     String TOPIC_NAME_CACHE_PROPERTY = "topic_name_by_task_type";
     String PRODUCER_PROPERTIES_CACHE = "kafka_producer_properties";
+    String REQUEST_CONSUMER_PROPERTIES_CACHE = "REQUEST_CONSUMER_PROPERTIES_CACHE";
 }

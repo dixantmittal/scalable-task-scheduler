@@ -8,8 +8,8 @@ import com.ixigo.exception.codes.jobschedulingservice.RequestValidationException
 import com.ixigo.request.jobexecutor.AddConsumersRequest;
 import com.ixigo.request.jobexecutor.RemoveConsumersRequest;
 import com.ixigo.request.jobexecutor.StopAllConsumersRequest;
-import com.ixigo.response.jobexecutor.AddConsumersResponse;
 import com.ixigo.response.ReloadCacheResponse;
+import com.ixigo.response.jobexecutor.AddConsumersResponse;
 import com.ixigo.response.jobexecutor.RemoveConsumersResponse;
 import com.ixigo.response.jobexecutor.StopConsumersResponse;
 import com.ixigo.service.KafkaRequestService;
@@ -58,7 +58,7 @@ public class KafkaRequestController {
 
     @RequestMapping(value = RestURIConstants.CONSUMER, method = RequestMethod.DELETE, produces = RestURIConstants.APPLICATION_JSON)
     @ResponseBody
-    public RemoveConsumersResponse removeConsumers(@RequestParam("topic") String topic, @RequestParam("count") Integer count) {
+    public RemoveConsumersResponse removeConsumers(@RequestParam(value = "topic", required = false) String topic, @RequestParam(value = "count", required = false) Integer count) {
         RemoveConsumersRequest request = new RemoveConsumersRequest(topic, count);
         validateRequest(request);
         return service.decreaseConsumers(request);
@@ -66,7 +66,7 @@ public class KafkaRequestController {
 
     @RequestMapping(value = RestURIConstants.STOP_CONSUMERS, method = RequestMethod.DELETE, produces = RestURIConstants.APPLICATION_JSON)
     @ResponseBody
-    public StopConsumersResponse stopAllConsumers(@RequestParam("topic") String topic) {
+    public StopConsumersResponse stopAllConsumers(@RequestParam(value = "topic", required = false) String topic) {
         StopAllConsumersRequest request = new StopAllConsumersRequest();
         request.setTopic(topic);
         // TODO Validate request
