@@ -15,16 +15,13 @@
           class="com.ixigo.factory.JobQueuingServiceProvider"
           factory-method="getInstance"/>
 
+    <bean id="requestServerProvider"
+          class="com.ixigo.factory.RequestServerProvider"
+          factory-method="getInstance"/>
+
     <bean id="scheduler"
           class="org.quartz.impl.StdSchedulerFactory"
           factory-method="getDefaultScheduler"/>
-
-    <!--<bean id="taskExecutorPlaceholderConfig" class="com.ixigo.utils.SpringPropertiesUtil">-->
-    <!--<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>-->
-    <!--<property name="locations">-->
-    <!--<value>classpath*:*application.properties</value>-->
-    <!--</property>-->
-    <!--</bean>-->
 
     <bean id="cacheBuilderImpl" class="com.ixigo.cache.CacheBuilderImpl"/>
 

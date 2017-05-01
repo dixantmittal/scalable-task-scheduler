@@ -10,15 +10,18 @@ import org.springframework.stereotype.Component;
 /**
  * Created by dixant on 28/04/17.
  */
-@Component
 public class RequestServerProvider {
+
+    private static RequestServerProvider _INSTANCE = new RequestServerProvider();
 
     @Autowired
     private DeleteTaskRequestServer deleteTaskRequestServer;
-
     @Autowired
     private AddTaskRequestServer addTaskRequestServer;
 
+    public static RequestServerProvider getInstance() {
+        return _INSTANCE;
+    }
 
     public IRequestServer getRequestServer(String requestType) {
         if (requestType.equals(ServiceConstants.ADD_TASK))

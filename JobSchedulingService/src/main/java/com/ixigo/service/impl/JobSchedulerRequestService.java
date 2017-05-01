@@ -1,5 +1,6 @@
 package com.ixigo.service.impl;
 
+import com.ixigo.constants.ConfigurationConstants;
 import com.ixigo.constants.jobschedulingservice.ServiceConstants;
 import com.ixigo.entity.JobSchedulingDetails;
 import com.ixigo.entity.RequestConsumer;
@@ -16,12 +17,19 @@ import com.ixigo.response.jobschedulingservice.StartSchedulerResponse;
 import com.ixigo.response.jobschedulingservice.StopSchedulerResponse;
 import com.ixigo.service.IJobManagementService;
 import com.ixigo.service.IJobSchedulerRequestService;
+import com.ixigo.utils.Configuration;
 import com.ixigo.utils.adapter.JobSchedulingDetailsAdapter;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static org.quartz.JobKey.jobKey;
 
@@ -31,16 +39,13 @@ import static org.quartz.JobKey.jobKey;
 @Service
 @Slf4j
 public class JobSchedulerRequestService implements IJobSchedulerRequestService {
-    @Autowired
-    private RequestConsumer requestConsumer;
 
+    private volatile Set<RequestConsumer> _THREADPOOL = new HashSet<>();
     @Autowired
     private Scheduler scheduler;
-
     @Autowired
     private IJobManagementService jobManagementService;
-
-    private Thread consumerThread;
+    private volatile Lock _LOCK = new ReentrantLock();
 
 //    public AddTaskResponse addTask(AddTaskRequest request) {
 //        JobSchedulingDetails jobDetails = JobSchedulingDetailsAdapter.adapt(request);
@@ -78,40 +83,100 @@ public class JobSchedulerRequestService implements IJobSchedulerRequestService {
 
     @Override
     public StartSchedulerResponse startScheduler() {
+        // acquire lock
+        _LOCK.lock();
         try {
+            // check if shutdown has not been called.
             if (scheduler.isShutdown()) {
                 throw new ServiceException(ServiceExceptionCodes.SCHEDULER_HAS_BEEN_SHUTDOWN.code(),
                         ServiceExceptionCodes.SCHEDULER_HAS_BEEN_SHUTDOWN.message());
             }
+            // only start the consumer if it is in stand by mode.
             if (!scheduler.isStarted() || scheduler.isInStandbyMode()) {
-                requestConsumer.close();
-                (consumerThread = new Thread(requestConsumer)).start();
+                startNewThreads();
                 scheduler.start();
             }
         } catch (SchedulerException e) {
             log.error("Error occurred while starting scheduler. Error: " + e);
             throw new InternalServerException();
+        } finally {
+            // release lock
+            _LOCK.unlock();
         }
         return new StartSchedulerResponse(Status.SUCCESS);
     }
 
+    private void startNewThreads() {
+        // acquire lock
+        _LOCK.lock();
+        try {
+            // get threads count
+            int threadCount = Integer.parseInt(Configuration.getGlobalProperty(ConfigurationConstants.REQUEST_CONSUMER_THREAD_COUNT));
+            RequestConsumer newThread;
+            while (threadCount-- > 0) {
+                // create a new thread and start it
+                (newThread = new RequestConsumer()).start();
+                // add thread to the thread pool
+                _THREADPOOL.add(newThread);
+            }
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            // release lock
+            _LOCK.unlock();
+        }
+    }
+
+    // Get lock to reduce threads.
+    private void closeThreads() {
+        // acquire lock
+        _LOCK.lock();
+        // making sure thread releases lock
+        try {
+            Iterator<RequestConsumer> itr = _THREADPOOL.iterator();
+            while (itr.hasNext()) {
+                // call threads close method
+                RequestConsumer thread = itr.next();
+                thread.close();
+                // remove thread from set so that GC can collect it.
+                _THREADPOOL.remove(thread);
+                itr.remove();
+            }
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            // release lock
+            _LOCK.unlock();
+        }
+    }
+
     @Override
     public StopSchedulerResponse stopScheduler(StopSchedulerRequest request) {
+        // acquire lock
+        _LOCK.lock();
         try {
-            if (!scheduler.isShutdown() || scheduler.isStarted()) {
-                requestConsumer.close();
+            // check if scheduler has ever started or not been shutdown
+            if (scheduler.isStarted() && !scheduler.isShutdown()) {
+                // close consumer threads
+                closeThreads();
                 switch (request.getMode()) {
                     case STANDBY:
-                        scheduler.standby();
+                        // if scheduler is not in stand by mode
+                        if (!scheduler.isInStandbyMode())
+                            scheduler.standby();
                         break;
                     case SHUTDOWN:
-                        scheduler.shutdown();
+                        // shutdown the scheduler
+                        scheduler.shutdown(true);
                         break;
                 }
             }
         } catch (SchedulerException e) {
             log.error("Error occurred while stopping scheduler. Error: " + e);
             throw new InternalServerException();
+        } finally {
+            // release lock
+            _LOCK.unlock();
         }
         return new StopSchedulerResponse(Status.SUCCESS);
     }

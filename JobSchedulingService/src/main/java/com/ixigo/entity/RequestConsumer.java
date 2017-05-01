@@ -11,8 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -21,12 +19,10 @@ import java.util.Properties;
 /**
  * Created by dixant on 28/04/17.
  */
-@Service
 @Slf4j
-public class RequestConsumer implements Runnable {
+public class RequestConsumer extends Thread {
 
-    @Autowired
-    RequestServerProvider provider;
+    RequestServerProvider provider = RequestServerProvider.getInstance();
 
     private volatile boolean shutdown;
 
