@@ -8,7 +8,7 @@ import com.ixigo.dbmapper.entity.TaskHistoryEntity;
 import com.ixigo.entity.KafkaTaskDetails;
 import com.ixigo.entity.RetryJobDetails;
 import com.ixigo.enums.Status;
-import com.ixigo.exception.ServiceException;
+import com.ixigo.exception.GenericException;
 import com.ixigo.httpclient.HttpMethod;
 import com.ixigo.httpclient.HttpMode;
 import com.ixigo.httpclient.HttpUtils;
@@ -109,9 +109,10 @@ public abstract class AbstractTaskExecutor implements ITaskExecutor {
                     AddTaskWithJobIdRequestAdapter.adapt(metadata),
                     HttpMethod.POST
             );
-        } catch (ServiceException e) {
-            log.error("Could not add task to job scheduler for retry. Exception: ", e);
-            taskHistory.setRemarks("Could not add task to job scheduler for retry.");
+        } catch (GenericException e) {
+            log.error("Could not add task to job scheduler for retry. [JOB-ID]: {}. Exception: {}", taskHistory.getJobId(), e);
+            taskHistory.setRemarks("Could not add task to job scheduler for retry. " +
+                    "Reason: " + e.getMessage());
         }
     }
 }

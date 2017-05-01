@@ -72,8 +72,6 @@ public class HttpUtils {
 
     private static <T> Map<String, Object> getParams(T request) {
         Map<String, Object> map;
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationConfig.Feature.FAIL_ON_EMPTY_BEANS, false);
         map = mapper.convertValue(request, HashMap.class);
         return map;
     }
@@ -135,7 +133,7 @@ public class HttpUtils {
         }
         if (result.getStatus() != 200) {
             String exceptionResponse = result.getBody().toString();
-            throw new ServiceException(CommonExceptionCodes.HTTP_CLIENT_EXCEPTION.code(),
+            throw new ServiceException((result.getStatus() + result.getStatusText()),
                     exceptionResponse);
         }
         return result.getBody().toString();
