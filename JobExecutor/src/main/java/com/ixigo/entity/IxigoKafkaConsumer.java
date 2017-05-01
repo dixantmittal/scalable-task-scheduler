@@ -14,7 +14,6 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Properties;
 
 /**
@@ -32,7 +31,7 @@ public class IxigoKafkaConsumer extends Thread {
         consumer = new KafkaConsumer<String, KafkaTaskDetails>(properties);
         groupId = properties.get(ConsumerConfig.GROUP_ID_CONFIG).toString();
         this.topic = topic;
-        subscribe(Arrays.asList(topic.topic()));
+        consumer.subscribe(Arrays.asList(topic.topic()));
         shutdown = false;
     }
 
@@ -48,7 +47,7 @@ public class IxigoKafkaConsumer extends Thread {
 
         // keep on polling and executing tasks until shutdown for this thread is called.
         while (!shutdown) {
-            ConsumerRecords<String, KafkaTaskDetails> tasks = poll(pollingTime);
+            ConsumerRecords<String, KafkaTaskDetails> tasks = consumer.poll(pollingTime);
 
             // if polling gave no tasks, then sleep this thread for n seconds.
             if (tasks.isEmpty()) {
@@ -77,14 +76,6 @@ public class IxigoKafkaConsumer extends Thread {
         }
         // when the shutdown is called, close the consumer connection.
         consumer.close();
-    }
-
-    public void subscribe(Collection<String> topics) {
-        consumer.subscribe(topics);
-    }
-
-    public ConsumerRecords<String, KafkaTaskDetails> poll(long timeout) {
-        return consumer.poll(timeout);
     }
 
     public void close() {
