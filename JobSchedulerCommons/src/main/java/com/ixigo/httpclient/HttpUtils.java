@@ -32,6 +32,7 @@ public class HttpUtils {
     static {
         mapper = new ObjectMapper();
         mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.configure(SerializationConfig.Feature.FAIL_ON_EMPTY_BEANS, false);
     }
 
     private static HttpResponse<JsonNode> executeHttpMethod(String baseURI,
