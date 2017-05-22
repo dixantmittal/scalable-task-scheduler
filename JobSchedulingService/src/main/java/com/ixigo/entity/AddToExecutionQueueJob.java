@@ -23,9 +23,10 @@ public class AddToExecutionQueueJob implements Job {
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         int maxRefireLimit = Integer.parseInt(Configuration.getGlobalProperty(ConfigurationConstants.MAX_REFIRE_LIMIT));
+        log.debug("Adding job to execution queue. Try count #{}", context.getRefireCount());
         if (context.getRefireCount() < maxRefireLimit) {
             JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
-
+            log.debug("Trying to add...");
             Boolean success = jobQueuingService.addJobToExecutionQueue(jobDataMap);
             if (!success) {
                 log.error("Could not push task to queue. Trying again. [Job-ID]: {}", context.getJobDetail().getKey());

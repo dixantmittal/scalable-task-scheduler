@@ -41,11 +41,11 @@ public class KafkaRequestService {
     public AddConsumersResponse addConsumers(AddConsumersRequest request) {
         _LOCK.lock();
         try {
-            AddConsumersResponse response = new AddConsumersResponse();
             int count = request.getCount();
             int maxThreadPoolSize = Integer.parseInt(
                     Configuration.getGlobalProperty(ConfigurationConstants.MAX_THREAD_POOL_SIZE));
 
+            log.debug("Adding new consumers. Requested counts: {}, Max ThreadPool size: {}, Currently running: {}", count, maxThreadPoolSize, totalThreads);
             if (totalThreads + count > maxThreadPoolSize) {
                 log.error("Requested consumer count is more than allowed. Requested: {}. Allowed: {}", count, maxThreadPoolSize - totalThreads);
                 throw new ServiceException(ServiceExceptionCodes.CONSUMER_COUNT_OUT_OF_BOUNDS.code(),
@@ -54,16 +54,13 @@ public class KafkaRequestService {
             totalThreads = totalThreads + count;
 
             while (count-- > 0) {
-
-                IxigoKafkaConsumer consumer = IxigoKafkaConsumerBuilder.buildNewKafkaConsumerWithTopic(
-                        new KafkaTopic(request.getTopicName()));
+                IxigoKafkaConsumer consumer = IxigoKafkaConsumerBuilder.buildNewKafkaConsumerWithTopic(new KafkaTopic(request.getTopicName()));
                 consumer.start();
                 CacheManager.getInstance().getCache(ConsumersCache.class)
                         .computeIfAbsent(request.getTopicName(), k -> new HashSet<IxigoKafkaConsumer>())
                         .add(consumer);
             }
-            response.setStatus(Status.SUCCESS);
-            return response;
+            return new AddConsumersResponse(Status.SUCCESS);
         } catch (Exception e) {
             throw e;
         } finally {

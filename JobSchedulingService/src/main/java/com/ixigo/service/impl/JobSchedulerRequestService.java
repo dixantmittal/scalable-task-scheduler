@@ -93,7 +93,9 @@ public class JobSchedulerRequestService implements IJobSchedulerRequestService {
             }
             // only start the consumer if it is in stand by mode.
             if (!scheduler.isStarted() || scheduler.isInStandbyMode()) {
+                log.debug("Starting new consumer threads to poll requests.");
                 startNewThreads();
+                log.debug("Starting quartz scheduler.");
                 scheduler.start();
             }
         } catch (SchedulerException e) {
@@ -112,11 +114,13 @@ public class JobSchedulerRequestService implements IJobSchedulerRequestService {
         try {
             // get threads count
             int threadCount = Integer.parseInt(Configuration.getGlobalProperty(ConfigurationConstants.REQUEST_CONSUMER_THREAD_COUNT));
+            log.debug("Total threads allowed: {}.", threadCount);
             RequestConsumer newThread;
             while (threadCount-- > 0) {
                 // create a new thread and start it
                 (newThread = new RequestConsumer()).start();
                 // add thread to the thread pool
+                log.debug("New consumer started: {}", newThread);
                 _THREADPOOL.add(newThread);
             }
         } catch (Exception e) {
@@ -133,6 +137,7 @@ public class JobSchedulerRequestService implements IJobSchedulerRequestService {
         _LOCK.lock();
         // making sure thread releases lock
         try {
+            log.debug("Trying to close threads one by one...");
             Iterator<RequestConsumer> itr = _THREADPOOL.iterator();
             while (itr.hasNext()) {
                 // call threads close method
@@ -140,6 +145,7 @@ public class JobSchedulerRequestService implements IJobSchedulerRequestService {
                 thread.close();
                 // remove thread from set so that GC can collect it.
                 itr.remove();
+                log.debug("Consumer thread removed.");
             }
         } catch (Exception e) {
             throw e;
@@ -157,16 +163,20 @@ public class JobSchedulerRequestService implements IJobSchedulerRequestService {
             // check if scheduler has ever started or not been shutdown
             if (scheduler.isStarted() && !scheduler.isShutdown()) {
                 // close consumer threads
+                log.debug("Trying to close scheduler...");
                 closeThreads();
                 switch (request.getMode()) {
                     case STANDBY:
                         // if scheduler is not in stand by mode
-                        if (!scheduler.isInStandbyMode())
+                        if (!scheduler.isInStandbyMode()) {
                             scheduler.standby();
+                            log.debug("scheduler has been moved to stand by mode...");
+                        }
                         break;
                     case SHUTDOWN:
                         // shutdown the scheduler
                         scheduler.shutdown(true);
+                        log.debug("scheduler has been shutdown");
                         break;
                 }
             }

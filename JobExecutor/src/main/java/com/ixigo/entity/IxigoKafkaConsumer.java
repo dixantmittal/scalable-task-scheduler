@@ -37,8 +37,6 @@ public class IxigoKafkaConsumer extends Thread {
 
     @Override
     public void run() {
-        // TODO where to set offset for a consumer.
-
 
         final int pollingTime = Integer.parseInt(
                 Configuration.getGlobalProperty(ConfigurationConstants.KAFKA_MAX_POLLING_TIME));
@@ -52,6 +50,7 @@ public class IxigoKafkaConsumer extends Thread {
             // if polling gave no tasks, then sleep this thread for n seconds.
             if (tasks.isEmpty()) {
                 try {
+                    log.debug("no tasks fetched from queue. Putting current thread to sleep.");
                     sleep(threadSleepTime);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
@@ -70,6 +69,7 @@ public class IxigoKafkaConsumer extends Thread {
                     throw new ServiceException(ServiceExceptionCodes.EXECUTOR_NOT_EXISTS.code(),
                             ServiceExceptionCodes.EXECUTOR_NOT_EXISTS.message());
                 }
+                log.debug("task executor fetched: {}", taskExecutor.getClass());
                 taskExecutor.execute(task.value());
             }
             consumer.commitSync();

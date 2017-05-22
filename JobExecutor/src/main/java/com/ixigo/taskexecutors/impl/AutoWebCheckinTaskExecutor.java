@@ -27,6 +27,8 @@ public class AutoWebCheckinTaskExecutor extends AbstractTaskExecutor {
     public Boolean process(String meta) throws JsonSyntaxException {
         String _QUEUE_NAME = Configuration.getProperty("rabbitmq.properties", "queue.name");
         String _SERVER_ADDRESS = Configuration.getProperty("rabbitmq.properties", "server.address");
+        log.debug("RabbitMQ Queue Name: {}", _QUEUE_NAME);
+        log.debug("RabbitMQ Server address: {}", _SERVER_ADDRESS);
         try {
             factory = new ConnectionFactory();
             factory.setHost(_SERVER_ADDRESS);

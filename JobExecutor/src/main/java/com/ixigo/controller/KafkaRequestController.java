@@ -46,11 +46,10 @@ public class KafkaRequestController {
     public AddConsumersResponse addConsumers(@RequestBody @Valid AddConsumersRequest request, BindingResult results) {
         if (results.hasErrors()) {
             log.error("Invalid request exception occurred while adding consumers.");
-            RequestValidationExceptionCodes error = RequestValidationExceptionCodes
-                    .forName(results
-                            .getAllErrors()
-                            .get(0)
-                            .getDefaultMessage());
+            RequestValidationExceptionCodes error = RequestValidationExceptionCodes.forName(results
+                    .getAllErrors()
+                    .get(0)
+                    .getDefaultMessage());
             throw new RequestValidationException(error.code(), error.message());
         }
         return service.addConsumers(request);

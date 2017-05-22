@@ -32,7 +32,9 @@ public class KafkaTaskPublisher implements IKafkaTaskPublisher {
             log.error("Topic not found for task type: {}. Can not proceed further.", taskDetails.getTaskType());
             return false;
         }
+        log.debug("Topic to use: {}", topic.topic());
         IxigoKafkaProducer producer = kafkaProducerFactory.getKafkaProducer(topic);
+        log.debug("Producer fetched from factory.");
         return ixigoKafkaClient.publish(producer, taskDetails.getJobId(), taskDetails);
     }
 }

@@ -27,11 +27,13 @@ public class RequestConsumer extends Thread {
     private volatile boolean shutdown;
 
     private static Properties getConsumerConfig() {
+        log.debug("Looking for Request Consumer properties in cache");
         Properties properties = new Properties();
         ConsumerPropertiesCache cache = CacheManager.getInstance().getCache(ConsumerPropertiesCache.class);
         for (Map.Entry<String, String> property : cache.entrySet()) {
             properties.put(property.getKey(), property.getValue());
         }
+        log.debug("Properties map size: {}", properties.size());
         return properties;
     }
 
@@ -40,6 +42,7 @@ public class RequestConsumer extends Thread {
         Properties consumerConfig = getConsumerConfig();
         KafkaConsumer<String, String> consumer = new KafkaConsumer<String, String>(consumerConfig);
         String topic = Configuration.getGlobalProperty(ConfigurationConstants.REQUEST_CONSUMER_TOPIC_NAME);
+        log.debug("Subscribing to REQUEST topic: {}", topic);
         consumer.subscribe(Arrays.asList(topic));
         shutdown = false;
 
@@ -47,6 +50,7 @@ public class RequestConsumer extends Thread {
         poll(consumer);
 
         // when the shutdown is called, close the consumer connection.
+        log.debug("Consumer {} is being closed down.", this.getThreadGroup());
         consumer.close();
     }
 
@@ -54,12 +58,15 @@ public class RequestConsumer extends Thread {
         final int pollingTime = Integer.parseInt(Configuration.getGlobalProperty(ConfigurationConstants.REQUEST_CONSUMER_POLL_TIME));
         final int threadSleepTime = Integer.parseInt(Configuration.getGlobalProperty(ConfigurationConstants.REQUEST_CONSUMER_THREAD_SLEEP_TIME));
 
+        log.debug("Polling params: Poll time: {}, Sleep time: {}", pollingTime, threadSleepTime);
+
         while (!shutdown) {
             ConsumerRecords<String, String> tasks = consumer.poll(pollingTime);
 
             // if polling gave no tasks, then sleep this thread for n seconds.
             if (tasks.isEmpty()) {
                 try {
+                    log.debug("No record found, sending current thread to sleep....");
                     Thread.sleep(threadSleepTime);
                     continue;
                 } catch (InterruptedException e) {
@@ -78,6 +85,7 @@ public class RequestConsumer extends Thread {
                     log.error("Request Server not found for request type: {}", task.key());
                     continue;
                 }
+                log.debug("Request server found: {}", requestServer.getClass());
                 try {
                     requestServer.serve(task.value());
                 } catch (ServiceException se) {
