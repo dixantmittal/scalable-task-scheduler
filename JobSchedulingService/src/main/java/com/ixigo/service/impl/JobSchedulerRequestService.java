@@ -139,7 +139,6 @@ public class JobSchedulerRequestService implements IJobSchedulerRequestService {
                 RequestConsumer thread = itr.next();
                 thread.close();
                 // remove thread from set so that GC can collect it.
-                _THREADPOOL.remove(thread);
                 itr.remove();
             }
         } catch (Exception e) {
