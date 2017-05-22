@@ -19,12 +19,11 @@ import java.util.concurrent.TimeoutException;
 @Slf4j
 @Component(value = "autoWebCheckinTaskExecutor")
 public class AutoWebCheckinTaskExecutor extends AbstractTaskExecutor {
-    private ConnectionFactory factory;
-    private Connection connection;
-    private Channel channel;
-
     @Override
     public Boolean process(String meta) throws JsonSyntaxException {
+        ConnectionFactory factory;
+        Connection connection = null;
+        Channel channel = null;
         String _QUEUE_NAME = Configuration.getProperty("rabbitmq.properties", "queue.name");
         String _SERVER_ADDRESS = Configuration.getProperty("rabbitmq.properties", "server.address");
         log.debug("RabbitMQ Queue Name: {}", _QUEUE_NAME);
@@ -44,10 +43,14 @@ public class AutoWebCheckinTaskExecutor extends AbstractTaskExecutor {
             return false;
         } finally {
             try {
-                channel.close();
-                log.info("RabbitMQ channel closed.");
+                if (channel != null) {
+                    channel.close();
+                    log.info("RabbitMQ channel closed.");
+                }
+                if (connection != null) {
                 connection.close();
-                log.info("RabbitMQ connection closed.");
+                    log.info("RabbitMQ connection closed.");
+                }
             } catch (IOException | TimeoutException e) {
                 log.error("Error occurred while closing connection to RabbitMQ. ", e);
                 return false;
