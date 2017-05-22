@@ -35,7 +35,7 @@ public class AutoWebCheckinTaskExecutor extends AbstractTaskExecutor {
             connection = factory.newConnection();
             channel = connection.createChannel();
             log.info("RabbitMQ channel created successfully. Sending data...");
-//            channel.queueDeclare(_QUEUE_NAME, true, false, false, null);
+            channel.queueDeclare(_QUEUE_NAME, true, false, false, null);
             channel.basicPublish("", _QUEUE_NAME, MessageProperties.PERSISTENT_TEXT_PLAIN, meta.getBytes());
             log.info("Data sent successfully to RabbitMQ");
             return true;
