@@ -43,11 +43,11 @@ public class IxigoQueuePublisher {
             return false;
         }
         try {
-            log.info("Publishing data to Kafka. Key: {}, value: {}", key, data);
+            log.debug("Publishing data to Kafka. Key: {}, value: {}", key, data);
             ProducerRecord<String, String> record = new ProducerRecord<String, String>(topicName, key, data);
             kafkaProducer.send(record);
             kafkaProducer.flush();
-            log.info("Publishing SUCCESSFUL");
+            log.debug("Publishing SUCCESSFUL");
         } catch (InterruptException ie) {
             log.error("Publisher thread interrupted. Exception: {}. Value: {}", ie, data);
             return false;
