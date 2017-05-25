@@ -63,23 +63,20 @@ public class JobHandlerRequestService {
                     DeleteTaskResponse.class,
                     request,
                     HttpMethod.DELETE);
-        } catch (ServiceException se) {
-            try {
-                log.debug("Service Exception occurred. Could not delete job");
-                ExceptionResponse exception = JsonUtils.fromJson(se.getErrMessage(), ExceptionResponse.class);
-                throw new ServiceException(exception.getCode(), exception.getMessage());
-            } catch (JsonSyntaxException jse) {
-                throw se;
-            }
-
-        } catch (GenericException ge) {
-            log.debug("Scheduling Service was not available.");
+        } catch (GenericException se) {
+            log.debug("Job deletion request failed. Retry available?: {}", request.getCanRetry());
             if (request.getCanRetry()) {
                 log.debug("Retry mechanism is being applied.");
                 Status status = queuePublisher.sendToQueue(ServiceConstants.DELETE_TASK, JsonUtils.toJson(request)) ? Status.SUCCESS : Status.FAILURE;
                 return new DeleteTaskResponse(status);
             }
-            throw ge;
+            log.error("Service Exception occurred. Could not delete job");
+            try {
+                ExceptionResponse exception = JsonUtils.fromJson(se.getErrMessage(), ExceptionResponse.class);
+                throw new ServiceException(exception.getCode(), exception.getMessage());
+            } catch (JsonSyntaxException jse) {
+                throw se;
+            }
         }
     }
 }

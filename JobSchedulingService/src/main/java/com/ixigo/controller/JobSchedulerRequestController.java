@@ -6,8 +6,10 @@ import com.ixigo.enums.SchedulerMode;
 import com.ixigo.enums.Status;
 import com.ixigo.exception.RequestValidationException;
 import com.ixigo.exception.codes.jobschedulingservice.RequestValidationExceptionCodes;
+import com.ixigo.request.jobschedulingservice.DeleteTaskRequest;
 import com.ixigo.request.jobschedulingservice.StopSchedulerRequest;
 import com.ixigo.response.ReloadCacheResponse;
+import com.ixigo.response.jobschedulingservice.DeleteTaskResponse;
 import com.ixigo.response.jobschedulingservice.StartSchedulerResponse;
 import com.ixigo.response.jobschedulingservice.StopSchedulerResponse;
 import com.ixigo.service.IJobSchedulerRequestService;
@@ -67,17 +69,17 @@ public class JobSchedulerRequestController {
 //        return requestService.addTask(request);
 //    }
 //
-//    @RequestMapping(
-//            value = RestURIConstants.TASK,
-//            method = RequestMethod.DELETE,
-//            produces = RestURIConstants.APPLICATION_JSON)
-//    @ResponseBody
-//    DeleteTaskResponse deleteTask(@RequestParam(value = "jobId", required = false) String jobId) {
-//        DeleteTaskRequest request = new DeleteTaskRequest();
-//        request.setJobId(jobId);
-//        validateRequest(request);
-//        return requestService.deleteTask(request);
-//    }
+    @RequestMapping(
+            value = RestURIConstants.TASK,
+            method = RequestMethod.DELETE,
+            produces = RestURIConstants.APPLICATION_JSON)
+    @ResponseBody
+    DeleteTaskResponse deleteTask(@RequestParam(value = "jobId", required = false) String jobId) {
+        DeleteTaskRequest request = new DeleteTaskRequest();
+        request.setJobId(jobId);
+        validateRequest(request);
+        return requestService.deleteTask(request);
+    }
 
     @RequestMapping(
             value = RestURIConstants.START_SCHEDULER,

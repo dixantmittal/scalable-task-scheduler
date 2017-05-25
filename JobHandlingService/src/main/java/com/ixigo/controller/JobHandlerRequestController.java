@@ -66,7 +66,7 @@ public class JobHandlerRequestController {
             method = RequestMethod.DELETE,
             produces = RestURIConstants.APPLICATION_JSON)
     @ResponseBody
-    DeleteTaskResponse deleteTask(@RequestParam(value = "jobId", required = false) String jobId, @RequestParam(value = "canRetry", required = false) String canRetry) {
+    DeleteTaskResponse deleteTask(@RequestParam(value = "job-id", required = false) String jobId, @RequestParam(value = "can-retry", required = false) String canRetry) {
         DeleteTaskRequest request = new DeleteTaskRequest();
         request.setJobId(jobId);
         request.setCanRetry(Boolean.valueOf(canRetry));
