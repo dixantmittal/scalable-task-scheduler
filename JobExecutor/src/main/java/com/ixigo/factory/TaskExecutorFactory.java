@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TaskExecutorFactory {
     public static ITaskExecutor getTaskExecutor(String taskType) {
-        log.debug("Getting task executor for task type: {}", taskType);
+        log.info("Getting task executor for task type: {}", taskType);
         return CacheManager.getInstance().getCache(TaskExecutorCache.class).get(taskType);
     }
 }

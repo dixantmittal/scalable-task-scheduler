@@ -45,7 +45,7 @@ public class KafkaRequestService {
             int maxThreadPoolSize = Integer.parseInt(
                     Configuration.getGlobalProperty(ConfigurationConstants.MAX_THREAD_POOL_SIZE));
 
-            log.debug("Adding new consumers. Requested counts: {}, Max ThreadPool size: {}, Currently running: {}", count, maxThreadPoolSize, totalThreads);
+            log.info("Adding new consumers. Requested counts: {}, Max ThreadPool size: {}, Currently running: {}", count, maxThreadPoolSize, totalThreads);
             if (totalThreads + count > maxThreadPoolSize) {
                 log.error("Requested consumer count is more than allowed. Requested: {}. Allowed: {}", count, maxThreadPoolSize - totalThreads);
                 throw new ServiceException(ServiceExceptionCodes.CONSUMER_COUNT_OUT_OF_BOUNDS.code(),

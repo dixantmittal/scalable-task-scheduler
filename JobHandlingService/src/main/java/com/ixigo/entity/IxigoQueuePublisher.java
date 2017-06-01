@@ -27,10 +27,10 @@ public class IxigoQueuePublisher {
     public IxigoQueuePublisher() {
         Properties properties = new Properties();
         try {
-            log.debug("Loading properties for REQUEST kafka topic.");
+            log.info("Loading properties for REQUEST kafka topic.");
             properties.load(IxigoQueuePublisher.class.getClassLoader().getResourceAsStream("kafka-producer.properties"));
             kafkaProducer = new KafkaProducer<String, String>(properties);
-            log.debug("Loading properties SUCCESSFUL");
+            log.info("Loading properties SUCCESSFUL");
         } catch (IOException e) {
             log.error("Could not find kafka kafkaProducer properties.");
             throw new InternalServerException();
@@ -43,11 +43,11 @@ public class IxigoQueuePublisher {
             return false;
         }
         try {
-            log.debug("Publishing data to Kafka. Key: {}, value: {}", key, data);
+            log.info("Publishing data to Kafka. Key: {}, value: {}", key, data);
             ProducerRecord<String, String> record = new ProducerRecord<String, String>(topicName, key, data);
             kafkaProducer.send(record);
             kafkaProducer.flush();
-            log.debug("Publishing SUCCESSFUL");
+            log.info("Publishing SUCCESSFUL");
         } catch (InterruptException ie) {
             log.error("Publisher thread interrupted. Exception: {}. Value: {}", ie, data);
             return false;

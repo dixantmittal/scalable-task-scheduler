@@ -35,7 +35,7 @@ public abstract class AbstractTaskExecutor implements ITaskExecutor {
 
     @Override
     public void execute(KafkaTaskDetails taskDetails) {
-        log.debug("Job received by Task Executor. [JOB-ID]: {}", taskDetails.getJobId());
+        log.info("Job received by Task Executor. [JOB-ID]: {}", taskDetails.getJobId());
         // create a task history object
         TaskHistoryEntity taskHistory = TaskHistoryEntityAdapter.adapt(taskDetails);
         try {
@@ -47,7 +47,7 @@ public abstract class AbstractTaskExecutor implements ITaskExecutor {
             if (!response) {
                 retryTask(taskDetails, taskHistory);
             }
-            log.debug("Job execution completed. [JOB-ID]: {}", taskDetails.getJobId());
+            log.info("Job execution completed. [JOB-ID]: {}", taskDetails.getJobId());
         } catch (JsonSyntaxException jse) {
             log.error("Wrong task meta passed to TaskMeta: " + taskDetails.getTaskMetadata());
             taskHistory.setExecutionStatus(Status.FAILURE.toString());
@@ -90,7 +90,7 @@ public abstract class AbstractTaskExecutor implements ITaskExecutor {
 
         // add new time to task history
         taskHistory.setNewScheduledTime(IxigoDateUtils.dateToString(newScheduledTime));
-        log.debug("Job rescheduled. [JOB-ID]: {}. [NEW TIME]: {}", metadata.getJobId(), taskHistory.getNewScheduledTime());
+        log.info("Job rescheduled. [JOB-ID]: {}. [NEW TIME]: {}", metadata.getJobId(), taskHistory.getNewScheduledTime());
 
         taskHistory.setRemarks("Retrying task");
 

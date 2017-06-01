@@ -37,22 +37,22 @@ public class CacheBuilderImpl implements ICacheBuilder {
     @PostConstruct
     @Override
     public void buildCaches() {
-        log.debug("Loading caches...");
+        log.info("Loading caches...");
         buildConfigCache();
         buildTaskExecutorCache();
         buildConsumerCache();
         buildConsumerPropertiesCache();
-        log.debug("Caches loaded successfully!...");
+        log.info("Caches loaded successfully!...");
     }
 
     private void buildConsumerCache() {
-        log.debug("building consumer cache...");
+        log.info("building consumer cache...");
         final ConsumersCache consumersCache = new ConsumersCache();
         CacheManager.getInstance().putCache(consumersCache);
     }
 
     private void buildConfigCache() {
-        log.debug("building Configuration cache...");
+        log.info("building Configuration cache...");
         final ConfigCache configCache = new ConfigCache();
         for (ConfigDetails details : configurationDaoImpl.getAllConfigs()) {
             if (configCache.get(details.getConfigType()) == null) {
@@ -64,7 +64,7 @@ public class CacheBuilderImpl implements ICacheBuilder {
     }
 
     private void buildTaskExecutorCache() {
-        log.debug("building task executor cache...");
+        log.info("building task executor cache...");
         final TaskExecutorCache cache = new TaskExecutorCache();
         Map<String, String> configMap = Configuration.getConfigMap(ServiceConstants.TASK_EXECUTOR_CACHE);
         for (Map.Entry<String, String> entry : configMap.entrySet()) {
@@ -75,7 +75,7 @@ public class CacheBuilderImpl implements ICacheBuilder {
     }
 
     private void buildConsumerPropertiesCache() {
-        log.debug("building consumer properties cache...");
+        log.info("building consumer properties cache...");
         final ConsumerPropertiesCache cache = new ConsumerPropertiesCache();
         Map<String, String> configMap = Configuration.getConfigMap(ServiceConstants.CONSUMER_PROPERTIES_CACHE);
         if (configMap == null || configMap.size() == 0) {

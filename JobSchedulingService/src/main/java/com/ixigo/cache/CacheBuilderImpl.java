@@ -30,16 +30,16 @@ public class CacheBuilderImpl implements ICacheBuilder {
     @PostConstruct
     @Override
     public void buildCaches() {
-        log.debug("Loading caches...");
+        log.info("Loading caches...");
         buildConfigCache();
         buildTopicNameCache();
         buildProducerPropertiesCache();
         buildConsumerPropertiesCache();
-        log.debug("Caches loaded successfully!...");
+        log.info("Caches loaded successfully!...");
     }
 
     private void buildProducerPropertiesCache() {
-        log.debug("building producer properties cache...");
+        log.info("building producer properties cache...");
         final ProducerPropertiesCache cache = new ProducerPropertiesCache();
         Map<String, String> configMap = Configuration.getConfigMap(ServiceConstants.PRODUCER_PROPERTIES_CACHE);
         if (configMap == null) {
@@ -53,7 +53,7 @@ public class CacheBuilderImpl implements ICacheBuilder {
     }
 
     private void buildTopicNameCache() {
-        log.debug("building topic name cache...");
+        log.info("building topic name cache...");
         final TopicNameCache cache = new TopicNameCache();
         Map<String, String> configMap = Configuration.getConfigMap(ServiceConstants.TOPIC_NAME_CACHE_PROPERTY);
         if (configMap == null) {
@@ -67,7 +67,7 @@ public class CacheBuilderImpl implements ICacheBuilder {
     }
 
     private void buildConfigCache() {
-        log.debug("building Configuration cache...");
+        log.info("building Configuration cache...");
         final ConfigCache configCache = new ConfigCache();
         for (ConfigDetails details : configurationDaoImpl.getAllConfigs()) {
             if (configCache.get(details.getConfigType()) == null) {
@@ -80,7 +80,7 @@ public class CacheBuilderImpl implements ICacheBuilder {
     }
 
     private void buildConsumerPropertiesCache() {
-        log.debug("building consumer properties cache...");
+        log.info("building consumer properties cache...");
         final ConsumerPropertiesCache cache = new ConsumerPropertiesCache();
         Map<String, String> configMap = Configuration.getConfigMap(REQUEST_CONSUMER_PROPERTIES_CACHE);
         if (configMap == null || configMap.size() == 0) {

@@ -31,7 +31,7 @@ public class QuartzJobManagementService implements IJobManagementService {
         JobDetail jobDetails = QuartzJobBuilder.buildJobWithJobId(schedulingDetails, jobId);
         Trigger jobTrigger = QuartzJobBuilder.buildTrigger(schedulingDetails);
         try {
-            log.debug("Adding job with jobId: {}", jobDetails.getKey());
+            log.info("Adding job with jobId: {}", jobDetails.getKey());
             scheduler.scheduleJob(jobDetails, jobTrigger);
         } catch (ObjectAlreadyExistsException oaee) {
             log.error("Job ID already exists. [JOB-ID]: {}", jobDetails.getKey());

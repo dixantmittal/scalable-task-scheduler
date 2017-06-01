@@ -20,10 +20,10 @@ public class AddTaskRequestServer implements IRequestServer {
     @Override
     public void serve(String requestJson) {
         try {
-            log.debug("creating addTask request from JSON.");
+            log.info("creating addTask request from JSON.");
             AddTaskWithJobIdRequest request = JsonUtils.fromJson(requestJson, AddTaskWithJobIdRequest.class);
             service.addTask(request);
-            log.debug("request created: {}", request);
+            log.info("request created: {}", request);
         } catch (JsonSyntaxException jse) {
             log.error("Json could not be deserialize in to request object. [JSON]: {}", requestJson);
         }

@@ -20,11 +20,11 @@ public class IxigoKafkaClient {
             return false;
         }
         try {
-            log.debug("publishing record to kafka. key: {}, value: {}", key, value);
+            log.info("publishing record to kafka. key: {}, value: {}", key, value);
             ProducerRecord<Object, Object> record = new ProducerRecord<Object, Object>(producer.getTopic().topic(), key, value);
             producer.send(record);
             producer.flush();
-            log.debug("Record publishing complete.");
+            log.info("Record publishing complete.");
         } catch (InterruptException ie) {
             log.error("Publisher thread interrupted. Exception: {}. Value: {}", ie, value);
             return false;

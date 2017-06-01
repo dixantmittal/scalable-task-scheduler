@@ -26,7 +26,7 @@ public class KafkaJobQueuingService implements IJobQueuingService {
         String jobDetails = jobDataMap.get(ServiceConstants.JOB_DETAILS).toString();
         KafkaTaskDetails taskDetails = JsonUtils.fromJson(jobDetails, KafkaTaskDetails.class);
         taskDetails.setJobId(jobDataMap.get(ServiceConstants.JOB_ID).toString());
-        log.debug("Kafka Task Details constructed: {}", taskDetails);
+        log.info("Kafka Task Details constructed: {}", taskDetails);
         return kafkaTaskPublisher.publishTask(taskDetails);
     }
 }

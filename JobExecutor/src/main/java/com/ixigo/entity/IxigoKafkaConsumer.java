@@ -69,7 +69,7 @@ public class IxigoKafkaConsumer extends Thread {
                     throw new ServiceException(ServiceExceptionCodes.EXECUTOR_NOT_EXISTS.code(),
                             ServiceExceptionCodes.EXECUTOR_NOT_EXISTS.message());
                 }
-                log.debug("task executor fetched: {}", taskExecutor.getClass());
+                log.info("task executor fetched: {}", taskExecutor.getClass());
                 taskExecutor.execute(task.value());
             }
             consumer.commitSync();

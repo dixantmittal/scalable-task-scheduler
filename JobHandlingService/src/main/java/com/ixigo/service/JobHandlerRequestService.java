@@ -36,21 +36,21 @@ public class JobHandlerRequestService {
     private String jobschedulerAddress;
 
     public AddTaskResponse addTask(AddTaskWithJobIdRequest request) {
-        log.debug("Add Task request received. Request: {}", request);
+        log.info("Add Task request received. Request: {}", request);
         Status status = queuePublisher.sendToQueue(ServiceConstants.ADD_TASK, JsonUtils.toJson(request)) ? Status.SUCCESS : Status.FAILURE;
-        log.debug("Status received after publishing request: {}", status);
+        log.info("Status received after publishing request: {}", status);
         return (new AddTaskResponse(status, request.getJobId()));
     }
 
     public AddTaskResponse addTask(AddTaskRequest addTaskRequest) {
         AddTaskWithJobIdRequest request = new AddTaskWithJobIdRequest(addTaskRequest);
         request.setJobId(IDGenerationUtils.generateRandomUUID(com.ixigo.constants.jobschedulingservice.ServiceConstants.JOB_IDENTIFIER));
-        log.debug("JobId generated: {}", request.getJobId());
+        log.info("JobId generated: {}", request.getJobId());
         return addTask(request);
     }
 
     public DeleteTaskResponse deleteTask(DeleteTaskRequest request) {
-        log.debug("Trying to connect to scheduling service to delete job...");
+        log.info("Trying to connect to scheduling service to delete job...");
         String url = HttpUtils.URLBuilder.newURL()
                 .withHttpMode(HttpMode.HTTP)
                 .withServerIp(jobschedulerAddress)
@@ -58,15 +58,15 @@ public class JobHandlerRequestService {
                 .build();
 
         try {
-            log.debug("Accessing URL: {}", url);
+            log.info("Accessing URL: {}", url);
             return HttpUtils.processHttpRequest(url,
                     DeleteTaskResponse.class,
                     request,
                     HttpMethod.DELETE);
         } catch (GenericException se) {
-            log.debug("Job deletion request failed. Retry available?: {}", request.getCanRetry());
+            log.info("Job deletion request failed. Retry available?: {}", request.getCanRetry());
             if (request.getCanRetry()) {
-                log.debug("Retry mechanism is being applied.");
+                log.info("Retry mechanism is being applied.");
                 Status status = queuePublisher.sendToQueue(ServiceConstants.DELETE_TASK, JsonUtils.toJson(request)) ? Status.SUCCESS : Status.FAILURE;
                 return new DeleteTaskResponse(status);
             }

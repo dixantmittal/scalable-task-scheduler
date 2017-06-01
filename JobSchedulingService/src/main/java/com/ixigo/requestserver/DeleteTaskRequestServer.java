@@ -20,10 +20,10 @@ public class DeleteTaskRequestServer implements IRequestServer {
     @Override
     public void serve(String requestJson) {
         try {
-            log.debug("creating deleteTask request from JSON.");
+            log.info("creating deleteTask request from JSON.");
             DeleteTaskRequest request = JsonUtils.fromJson(requestJson, DeleteTaskRequest.class);
             service.deleteTask(request);
-            log.debug("delete task created: {}", request);
+            log.info("delete task created: {}", request);
         } catch (JsonSyntaxException jse) {
             log.error("Json could not be deserialize in to request object. [JSON]: {}", requestJson);
         }

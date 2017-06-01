@@ -26,8 +26,8 @@ public class AutoWebCheckinTaskExecutor extends AbstractTaskExecutor {
         Channel channel = null;
         String _QUEUE_NAME = Configuration.getProperty("rabbitmq.properties", "queue.name");
         String _SERVER_ADDRESS = Configuration.getProperty("rabbitmq.properties", "server.address");
-        log.debug("RabbitMQ Queue Name: {}", _QUEUE_NAME);
-        log.debug("RabbitMQ Server address: {}", _SERVER_ADDRESS);
+        log.info("RabbitMQ Queue Name: {}", _QUEUE_NAME);
+        log.info("RabbitMQ Server address: {}", _SERVER_ADDRESS);
         try {
             factory = new ConnectionFactory();
             factory.setHost(_SERVER_ADDRESS);
