@@ -10,6 +10,8 @@ import org.quartz.*;
 import java.util.Date;
 import java.time.ZoneId;
 
+import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
+
 /**
  * Created by dixant on 27/03/17.
  */
@@ -36,6 +38,7 @@ public class QuartzJobBuilder {
         Trigger jobTrigger = TriggerBuilder.newTrigger()
                 .withIdentity(IDGenerationUtils.generateRandomUUID(ServiceConstants.TRIGGER_IDENTIFIER), ServiceConstants.DEFAULT_GROUP_ID)
                 .startAt(Date.from(jobDetails.getScheduledTime().atZone(ZoneId.systemDefault()).toInstant()))
+                .withSchedule(simpleSchedule().withMisfireHandlingInstructionFireNow())
                 .withPriority(priority)
                 .build();
 
