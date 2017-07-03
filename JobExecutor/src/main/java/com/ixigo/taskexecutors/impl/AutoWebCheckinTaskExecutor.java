@@ -11,6 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -25,12 +28,12 @@ public class AutoWebCheckinTaskExecutor extends AbstractTaskExecutor {
         Connection connection = null;
         Channel channel = null;
         String _QUEUE_NAME = Configuration.getProperty("rabbitmq.properties", "queue.name");
-        String _SERVER_ADDRESS = Configuration.getProperty("rabbitmq.properties", "server.address");
+        String _SERVER_URI = Configuration.getProperty("rabbitmq.properties", "server.uri");
         log.info("RabbitMQ Queue Name: {}", _QUEUE_NAME);
-        log.info("RabbitMQ Server address: {}", _SERVER_ADDRESS);
+        log.info("RabbitMQ Server uri: {}", _SERVER_URI);
         try {
             factory = new ConnectionFactory();
-            factory.setHost(_SERVER_ADDRESS);
+            factory.setUri(_SERVER_URI);
             connection = factory.newConnection();
             channel = connection.createChannel();
             log.info("RabbitMQ channel created successfully. Sending data...");
@@ -38,7 +41,7 @@ public class AutoWebCheckinTaskExecutor extends AbstractTaskExecutor {
             channel.basicPublish("", _QUEUE_NAME, MessageProperties.PERSISTENT_TEXT_PLAIN, meta.getBytes());
             log.info("Data sent successfully to RabbitMQ");
             return true;
-        } catch (IOException | TimeoutException e) {
+        } catch (IOException | TimeoutException | NoSuchAlgorithmException | KeyManagementException | URISyntaxException e) {
             log.error("Error occurred while sending data to RabbitMQ. ", e);
             return false;
         } finally {

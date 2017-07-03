@@ -47,7 +47,7 @@ public abstract class AbstractTaskExecutor implements ITaskExecutor {
             if (!response) {
                 retryTask(taskDetails, taskHistory);
             }
-            log.info("Job execution completed. [JOB-ID]: {}", taskDetails.getJobId());
+            log.info("Job execution success: {}. [JOB-ID]: {}", response, taskDetails.getJobId());
         } catch (JsonSyntaxException jse) {
             log.error("Wrong task meta passed to TaskMeta: " + taskDetails.getTaskMetadata());
             taskHistory.setExecutionStatus(Status.FAILURE.toString());
@@ -90,7 +90,7 @@ public abstract class AbstractTaskExecutor implements ITaskExecutor {
 
         // add new time to task history
         taskHistory.setNewScheduledTime(IxigoDateUtils.dateToString(newScheduledTime));
-        log.info("Job rescheduled. [JOB-ID]: {}. [NEW TIME]: {}", metadata.getJobId(), taskHistory.getNewScheduledTime());
+        log.info("Trying to reschedule Job. [JOB-ID]: {}. [NEW TIME]: {}", metadata.getJobId(), taskHistory.getNewScheduledTime());
 
         taskHistory.setRemarks("Retrying task");
 
@@ -109,6 +109,7 @@ public abstract class AbstractTaskExecutor implements ITaskExecutor {
                     AddTaskWithJobIdRequestAdapter.adapt(metadata),
                     HttpMethod.POST
             );
+            log.info("Job rescheduled. [JOB-ID]: {}. [NEW TIME]: {}", metadata.getJobId(), taskHistory.getNewScheduledTime());
         } catch (GenericException e) {
             log.error("Could not add task to job scheduler for retry. [JOB-ID]: {}. Exception: {}", taskHistory.getJobId(), e);
             taskHistory.setRemarks("Could not add task to job scheduler for retry. " +
