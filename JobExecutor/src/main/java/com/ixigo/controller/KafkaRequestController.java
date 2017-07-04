@@ -4,7 +4,7 @@ import com.ixigo.cache.service.ICacheBuilder;
 import com.ixigo.constants.jobexecutor.RestURIConstants;
 import com.ixigo.enums.Status;
 import com.ixigo.exception.RequestValidationException;
-import com.ixigo.exception.codes.jobschedulingservice.RequestValidationExceptionCodes;
+import com.ixigo.exception.codes.jobexecutor.RequestValidationExceptionCodes;
 import com.ixigo.request.jobexecutor.AddConsumersRequest;
 import com.ixigo.request.jobexecutor.RemoveConsumersRequest;
 import com.ixigo.request.jobexecutor.StopAllConsumersRequest;

@@ -34,7 +34,7 @@ public class AddTaskWithJobIdRequestValidator implements ConstraintValidator<Add
             addConstraintViolation(context, RequestValidationExceptionCodes.TASK_TYPE_IS_BLANK.name());
             return false;
         }
-        if (StringUtils.isBlank(request.getScheduledTime())) {
+        if (request.getScheduledTime() == null) {
             addConstraintViolation(context, RequestValidationExceptionCodes.SCHEDULED_TIME_IS_BLANK.name());
             return false;
         }

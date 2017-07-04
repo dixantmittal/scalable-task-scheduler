@@ -18,5 +18,5 @@ public class RemoveConsumersRequest {
     @NotBlank(message = RequestValidationExceptionConstants.TOPIC_NAME_IS_BLANK)
     private String topic;
     @Min(value = 1, message = RequestValidationExceptionConstants.INVALID_COUNT)
-    private int count;
+    private Integer count;
 }

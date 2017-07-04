@@ -2,7 +2,8 @@ package com.ixigo.utils.adapter;
 
 import com.ixigo.entity.KafkaTaskDetails;
 import com.ixigo.request.jobschedulingservice.AddTaskWithJobIdRequest;
-import com.ixigo.utils.IxigoDateUtils;
+
+import java.sql.Timestamp;
 
 /**
  * Created by dixant on 20/04/17.
@@ -14,7 +15,7 @@ public class AddTaskWithJobIdRequestAdapter {
         request.setRetryJobDetails(kafkaTaskDetails.getRetryJobDetails());
         request.setTaskType(kafkaTaskDetails.getTaskType());
         request.setTaskMetadata(kafkaTaskDetails.getTaskMetadata());
-        request.setScheduledTime(IxigoDateUtils.dateToString(kafkaTaskDetails.getScheduledTime()));
+        request.setScheduledTime(Timestamp.valueOf(kafkaTaskDetails.getScheduledTime()));
         return request;
     }
 }

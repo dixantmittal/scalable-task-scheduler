@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
+
 /**
  * Created by dixant on 27/03/17.
  */
@@ -16,8 +18,8 @@ import lombok.NoArgsConstructor;
 public class AddTaskRequest {
     private String taskType;
     private String taskMetadata;
-    private String scheduledTime;
-    private String priority;
+    private Timestamp scheduledTime;
+    private Integer priority;
     private RetryJobDetails retryJobDetails;
     private Boolean canRetry;
 
