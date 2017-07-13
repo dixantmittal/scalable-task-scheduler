@@ -10,7 +10,7 @@ import com.ixigo.utils.IxigoDateUtils;
 public class TaskHistoryEntityAdapter {
     public static TaskHistoryEntity adapt(KafkaTaskDetails kafkaTaskDetails) {
         TaskHistoryEntity entity = new TaskHistoryEntity();
-        entity.setJobId(kafkaTaskDetails.getJobId());
+        entity.setTaskId(kafkaTaskDetails.getTaskId());
         entity.setTaskMetadata(kafkaTaskDetails.getTaskMetadata());
         entity.setTaskType(kafkaTaskDetails.getTaskType());
         entity.setOldScheduledTime(IxigoDateUtils.dateToString(kafkaTaskDetails.getScheduledTime()));

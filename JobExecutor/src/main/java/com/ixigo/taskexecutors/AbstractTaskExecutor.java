@@ -6,7 +6,7 @@ import com.ixigo.constants.jobschedulingservice.RestURIConstants;
 import com.ixigo.dao.ITaskDao;
 import com.ixigo.dbmapper.entity.TaskHistoryEntity;
 import com.ixigo.entity.KafkaTaskDetails;
-import com.ixigo.entity.RetryJobDetails;
+import com.ixigo.entity.RetryTaskDetails;
 import com.ixigo.enums.Status;
 import com.ixigo.exception.GenericException;
 import com.ixigo.httpclient.HttpMethod;
@@ -15,7 +15,7 @@ import com.ixigo.httpclient.HttpUtils;
 import com.ixigo.response.jobschedulingservice.AddTaskResponse;
 import com.ixigo.utils.Configuration;
 import com.ixigo.utils.IxigoDateUtils;
-import com.ixigo.utils.adapter.AddTaskWithJobIdRequestAdapter;
+import com.ixigo.utils.adapter.AddTaskWithTaskIdRequestAdapter;
 import com.ixigo.utils.adapter.TaskHistoryEntityAdapter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +35,7 @@ public abstract class AbstractTaskExecutor implements ITaskExecutor {
 
     @Override
     public void execute(KafkaTaskDetails taskDetails) {
-        log.info("Job received by Task Executor. [JOB-ID]: {}", taskDetails.getJobId());
+        log.info("Task received by Task Executor. [JOB-ID]: {}", taskDetails.getTaskId());
         // create a task history object
         TaskHistoryEntity taskHistory = TaskHistoryEntityAdapter.adapt(taskDetails);
         try {
@@ -47,13 +47,13 @@ public abstract class AbstractTaskExecutor implements ITaskExecutor {
             if (!response) {
                 retryTask(taskDetails, taskHistory);
             }
-            log.info("Job execution success: {}. [JOB-ID]: {}", response, taskDetails.getJobId());
+            log.info("Task execution success: {}. [TASK-ID]: {}", response, taskDetails.getTaskId());
         } catch (JsonSyntaxException jse) {
             log.error("Wrong task meta passed to TaskMeta: " + taskDetails.getTaskMetadata());
             taskHistory.setExecutionStatus(Status.FAILURE.toString());
             taskHistory.setRemarks("Wrong task meta passed to TaskMeta");
         } catch (Exception e) {
-            log.error("Error occurred while performing task. JobId: {}. Exception: {}.", e, taskDetails.getJobId());
+            log.error("Error occurred while performing task. TaskId: {}. Exception: ", taskDetails.getTaskId(), e);
             retryTask(taskDetails, taskHistory);
             taskHistory.setExecutionStatus(Status.FAILURE.toString());
         }
@@ -62,13 +62,13 @@ public abstract class AbstractTaskExecutor implements ITaskExecutor {
 
     private void retryTask(KafkaTaskDetails metadata, TaskHistoryEntity taskHistory) {
 
-        if (metadata.getRetryJobDetails() == null) {
+        if (metadata.getRetryTaskDetails() == null) {
             taskHistory.setRemarks("Retry details not found");
             return;
         }
 
         // get retry logic
-        RetryJobDetails retryDetails = metadata.getRetryJobDetails();
+        RetryTaskDetails retryDetails = metadata.getRetryTaskDetails();
         int retryCount = retryDetails.getRetriesCount() + 1;
         int maxRetriesAllowed = retryDetails.getMaxRetriesAllowed();
         if (retryCount > maxRetriesAllowed) {
@@ -90,7 +90,7 @@ public abstract class AbstractTaskExecutor implements ITaskExecutor {
 
         // add new time to task history
         taskHistory.setNewScheduledTime(IxigoDateUtils.dateToString(newScheduledTime));
-        log.info("Trying to reschedule Job. [JOB-ID]: {}. [NEW TIME]: {}", metadata.getJobId(), taskHistory.getNewScheduledTime());
+        log.info("Trying to reschedule Task. [TASK-ID]: {}. [NEW TIME]: {}", metadata.getTaskId(), taskHistory.getNewScheduledTime());
 
         taskHistory.setRemarks("Retrying task");
 
@@ -103,16 +103,16 @@ public abstract class AbstractTaskExecutor implements ITaskExecutor {
                             .withHttpMode(HttpMode.HTTP)
                             .withServerIp(serverIp)
                             .withServerPort(serverPort)
-                            .withURI(RestURIConstants.JOB_SCHEDULER_BASE_URI + RestURIConstants.TASK + RestURIConstants.JOB_ID)
+                            .withURI(RestURIConstants.TASK_SCHEDULER_BASE_URI + RestURIConstants.TASK + RestURIConstants.JOB_ID)
                             .build(),
                     AddTaskResponse.class,
-                    AddTaskWithJobIdRequestAdapter.adapt(metadata),
+                    AddTaskWithTaskIdRequestAdapter.adapt(metadata),
                     HttpMethod.POST
             );
-            log.info("Job rescheduled. [JOB-ID]: {}. [NEW TIME]: {}", metadata.getJobId(), taskHistory.getNewScheduledTime());
+            log.info("Task rescheduled. [TASK-ID]: {}. [NEW TIME]: {}", metadata.getTaskId(), taskHistory.getNewScheduledTime());
         } catch (GenericException e) {
-            log.error("Could not add task to job scheduler for retry. [JOB-ID]: {}. Exception: {}", taskHistory.getJobId(), e);
-            taskHistory.setRemarks("Could not add task to job scheduler for retry. " +
+            log.error("Could not add task to task scheduler for retry. [TASK-ID]: {}. Exception: {}", taskHistory.getTaskId(), e);
+            taskHistory.setRemarks("Could not add task to task scheduler for retry. " +
                     "Reason: " + e.getMessage());
         }
     }

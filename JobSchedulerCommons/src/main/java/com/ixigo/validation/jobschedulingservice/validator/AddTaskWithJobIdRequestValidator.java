@@ -1,7 +1,7 @@
 package com.ixigo.validation.jobschedulingservice.validator;
 
 import com.ixigo.exception.codes.jobschedulingservice.RequestValidationExceptionCodes;
-import com.ixigo.request.jobschedulingservice.AddTaskWithJobIdRequest;
+import com.ixigo.request.jobschedulingservice.AddTaskWithTaskIdRequest;
 import com.ixigo.validation.jobschedulingservice.AddTaskWithJobIdRequestValidation;
 import org.apache.commons.lang3.StringUtils;
 
@@ -11,7 +11,7 @@ import javax.validation.ConstraintValidatorContext;
 /**
  * Created by dixant on 04/04/17.
  */
-public class AddTaskWithJobIdRequestValidator implements ConstraintValidator<AddTaskWithJobIdRequestValidation, AddTaskWithJobIdRequest> {
+public class AddTaskWithJobIdRequestValidator implements ConstraintValidator<AddTaskWithJobIdRequestValidation, AddTaskWithTaskIdRequest> {
 
     private void addConstraintViolation(ConstraintValidatorContext context,
                                         String requestExceptionCodes) {
@@ -25,8 +25,8 @@ public class AddTaskWithJobIdRequestValidator implements ConstraintValidator<Add
     }
 
     @Override
-    public boolean isValid(AddTaskWithJobIdRequest request, ConstraintValidatorContext context) {
-        if (StringUtils.isBlank(request.getJobId())) {
+    public boolean isValid(AddTaskWithTaskIdRequest request, ConstraintValidatorContext context) {
+        if (StringUtils.isBlank(request.getTaskId())) {
             addConstraintViolation(context, RequestValidationExceptionCodes.JOB_ID_IS_BLANK.name());
             return false;
         }

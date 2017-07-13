@@ -1,8 +1,8 @@
 package com.ixigo.entity;
 
 import com.ixigo.constants.ConfigurationConstants;
-import com.ixigo.factory.JobQueuingServiceProvider;
-import com.ixigo.service.IJobQueuingService;
+import com.ixigo.factory.TaskQueuingServiceProvider;
+import com.ixigo.service.ITaskQueuingService;
 import com.ixigo.utils.Configuration;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;
@@ -18,25 +18,25 @@ import org.quartz.JobExecutionException;
 @Slf4j
 public class AddToExecutionQueueJob implements Job {
 
-    private IJobQueuingService jobQueuingService = JobQueuingServiceProvider.getInstance().getJobQueuingService();
+    private ITaskQueuingService taskQueuingService = TaskQueuingServiceProvider.getInstance().getTaskQueuingService();
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         int maxRefireLimit = Integer.parseInt(Configuration.getGlobalProperty(ConfigurationConstants.MAX_REFIRE_LIMIT));
-        log.info("Adding job to execution queue. Try count #{}", context.getRefireCount());
+        log.info("Adding task to execution queue. Try count #{}", context.getRefireCount());
         if (context.getRefireCount() < maxRefireLimit) {
             JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
             log.info("Trying to add...");
-            Boolean success = jobQueuingService.addJobToExecutionQueue(jobDataMap);
+            Boolean success = taskQueuingService.addJobToExecutionQueue(jobDataMap);
             if (!success) {
-                log.error("Could not push task to queue. Trying again. [Job-ID]: {}", context.getJobDetail().getKey());
+                log.error("Could not push task to queue. Trying again. [Task-ID]: {}", context.getJobDetail().getKey());
                 JobExecutionException jee = new JobExecutionException("Could not push task to queue. Trying again.");
                 jee.setRefireImmediately(true);
                 throw jee;
             }
-            log.info("Job published on Kafka queue. [JOB-ID]: {}");
+            log.info("Task published on Kafka queue. [TASK-ID]: {}");
         } else {
-            log.error("Retries exceeded. [Job-ID]: {}", context.getJobDetail().getKey());
+            log.error("Retries exceeded. [Task-ID]: {}", context.getJobDetail().getKey());
             JobExecutionException jee = new JobExecutionException("Retries exceeded");
             jee.setUnscheduleAllTriggers(true);
             throw jee;

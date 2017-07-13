@@ -14,10 +14,10 @@ import lombok.NoArgsConstructor;
 @AddTaskWithJobIdRequestValidation
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddTaskWithJobIdRequest extends AddTaskRequest {
-    private String jobId;
+public class AddTaskWithTaskIdRequest extends AddTaskRequest {
+    private String taskId;
 
-    public AddTaskWithJobIdRequest(AddTaskRequest ob) {
+    public AddTaskWithTaskIdRequest(AddTaskRequest ob) {
         super(ob);
     }
 }

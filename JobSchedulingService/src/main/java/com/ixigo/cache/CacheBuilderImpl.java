@@ -1,6 +1,6 @@
 package com.ixigo.cache;
 
-import com.ixigo.cache.impl.ConfigCache;
+import com.ixigo.cache.impl.ConfigurationCache;
 import com.ixigo.cache.service.ICacheBuilder;
 import com.ixigo.constants.jobschedulingservice.ServiceConstants;
 import com.ixigo.dao.IConfigurationDao;
@@ -68,7 +68,7 @@ public class CacheBuilderImpl implements ICacheBuilder {
 
     private void buildConfigCache() {
         log.info("building Configuration cache...");
-        final ConfigCache configCache = new ConfigCache();
+        final ConfigurationCache configCache = new ConfigurationCache();
         for (ConfigDetails details : configurationDaoImpl.getAllConfigs()) {
             if (configCache.get(details.getConfigType()) == null) {
                 configCache.put(details.getConfigType(), new HashMap<String, String>());

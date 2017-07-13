@@ -8,9 +8,9 @@ import java.time.LocalDateTime;
  * Created by dixant on 28/03/17.
  */
 @Data
-public abstract class JobDetails {
+public abstract class TaskDetails {
     protected String taskType;
     protected String taskMetadata;
     protected LocalDateTime scheduledTime;
-    protected RetryJobDetails retryJobDetails;
+    protected RetryTaskDetails retryTaskDetails;
 }

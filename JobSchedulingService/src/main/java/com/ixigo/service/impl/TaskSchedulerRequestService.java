@@ -2,13 +2,13 @@ package com.ixigo.service.impl;
 
 import com.ixigo.constants.ConfigurationConstants;
 import com.ixigo.constants.jobschedulingservice.ServiceConstants;
-import com.ixigo.entity.JobSchedulingDetails;
 import com.ixigo.entity.RequestConsumer;
+import com.ixigo.entity.TaskSchedulingDetails;
 import com.ixigo.enums.Status;
 import com.ixigo.exception.InternalServerException;
 import com.ixigo.exception.ServiceException;
 import com.ixigo.exception.codes.jobschedulingservice.ServiceExceptionCodes;
-import com.ixigo.request.jobschedulingservice.AddTaskWithJobIdRequest;
+import com.ixigo.request.jobschedulingservice.AddTaskWithTaskIdRequest;
 import com.ixigo.request.jobschedulingservice.DeleteTaskRequest;
 import com.ixigo.request.jobschedulingservice.StopSchedulerRequest;
 import com.ixigo.response.jobschedulingservice.AddTaskResponse;
@@ -16,9 +16,9 @@ import com.ixigo.response.jobschedulingservice.DeleteTaskResponse;
 import com.ixigo.response.jobschedulingservice.StartSchedulerResponse;
 import com.ixigo.response.jobschedulingservice.StopSchedulerResponse;
 import com.ixigo.service.IJobManagementService;
-import com.ixigo.service.IJobSchedulerRequestService;
+import com.ixigo.service.ITaskSchedulerRequestService;
 import com.ixigo.utils.Configuration;
-import com.ixigo.utils.adapter.JobSchedulingDetailsAdapter;
+import com.ixigo.utils.adapter.TaskSchedulingDetailsAdapter;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -38,7 +38,7 @@ import static org.quartz.JobKey.jobKey;
  */
 @Service
 @Slf4j
-public class JobSchedulerRequestService implements IJobSchedulerRequestService {
+public class TaskSchedulerRequestService implements ITaskSchedulerRequestService {
 
     private volatile Set<RequestConsumer> _THREADPOOL = new HashSet<>();
     @Autowired
@@ -47,16 +47,9 @@ public class JobSchedulerRequestService implements IJobSchedulerRequestService {
     private IJobManagementService jobManagementService;
     private volatile Lock _LOCK = new ReentrantLock();
 
-//    public AddTaskResponse addTask(AddTaskRequest request) {
-//        JobSchedulingDetails jobDetails = JobSchedulingDetailsAdapter.adapt(request);
-//        String jobId = jobManagementService.createJob(jobDetails);
-//        log.info("Job added to Job Scheduler. [JOB-ID]: {}", jobId);
-//        return new AddTaskResponse(Status.SUCCESS, jobId);
-//    }
-
-    public AddTaskResponse addTask(AddTaskWithJobIdRequest request) {
-        JobSchedulingDetails jobDetails = JobSchedulingDetailsAdapter.adapt(request);
-        String jobId = jobManagementService.createJobWithJobId(jobDetails, request.getJobId());
+    public AddTaskResponse addTask(AddTaskWithTaskIdRequest request) {
+        TaskSchedulingDetails taskDetails = TaskSchedulingDetailsAdapter.adapt(request);
+        String jobId = jobManagementService.createJobWithJobId(taskDetails, request.getTaskId());
         log.info("Job added to Job Scheduler. [JOB-ID]: {}", jobId);
         return new AddTaskResponse(Status.SUCCESS, jobId);
     }

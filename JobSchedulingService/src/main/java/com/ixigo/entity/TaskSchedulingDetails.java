@@ -9,14 +9,14 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class JobSchedulingDetails extends JobDetails {
+public class TaskSchedulingDetails extends TaskDetails {
     public static final int MAX_PRIORITY = 10;
     public static final int MEDIUM_PRIORITY = 5;
     public static final int MIN_PRIORITY = 1;
 
     private int priority;
 
-    public JobSchedulingDetails() {
+    public TaskSchedulingDetails() {
         super();
         priority = MAX_PRIORITY;
     }

@@ -54,10 +54,10 @@ public class KafkaRequestService {
             totalThreads = totalThreads + count;
 
             while (count-- > 0) {
-                IxigoKafkaConsumer consumer = IxigoKafkaConsumerBuilder.buildNewKafkaConsumerWithTopic(new KafkaTopic(request.getTopicName()));
+                IxigoKafkaConsumer consumer = IxigoKafkaConsumerBuilder.buildNewKafkaConsumerWithTopic(new KafkaTopic(request.getTopic()));
                 consumer.start();
                 CacheManager.getInstance().getCache(ConsumersCache.class)
-                        .computeIfAbsent(request.getTopicName(), k -> new HashSet<IxigoKafkaConsumer>())
+                        .computeIfAbsent(request.getTopic(), k -> new HashSet<IxigoKafkaConsumer>())
                         .add(consumer);
             }
             return new AddConsumersResponse(Status.SUCCESS);

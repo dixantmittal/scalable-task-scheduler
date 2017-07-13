@@ -1,11 +1,10 @@
 package com.ixigo.factory;
 
 import com.ixigo.constants.jobhandlingservice.ServiceConstants;
-import com.ixigo.requestserver.AddTaskRequestServer;
-import com.ixigo.requestserver.DeleteTaskRequestServer;
+import com.ixigo.requestserver.impl.AddTaskRequestServer;
+import com.ixigo.requestserver.impl.DeleteTaskRequestServer;
 import com.ixigo.requestserver.IRequestServer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 /**
  * Created by dixant on 28/04/17.

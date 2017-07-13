@@ -5,7 +5,7 @@
 <mapper namespace="com.ixigo.dbmapper.ITaskHistoryMapper">
 
     <resultMap id="result" type="com.ixigo.dbmapper.entity.TaskHistoryEntity">
-        <result property="jobId" column="job_id"/>
+        <result property="taskId" column="job_id"/>
         <result property="taskType" column="task_type"/>
         <result property="taskMetadata" column="task_metadata"/>
         <result property="executionStatus" column="execution_status"/>
@@ -29,7 +29,7 @@
         <include refid="base_column_list"/>
         )
         VALUES (
-        #{jobId},
+        #{taskId},
         #{taskType},
         #{taskMetadata},
         #{executionStatus},

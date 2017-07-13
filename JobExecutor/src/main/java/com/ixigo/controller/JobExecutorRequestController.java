@@ -30,7 +30,7 @@ import java.util.Set;
 @Controller
 @Slf4j
 @RequestMapping(value = RestURIConstants.KAFKA_JOB_EXECUTOR_BASE_URI)
-public class KafkaRequestController {
+public class JobExecutorRequestController {
 
     @Autowired
     Validator validator;

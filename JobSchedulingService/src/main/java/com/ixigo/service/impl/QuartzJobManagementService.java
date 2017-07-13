@@ -1,6 +1,6 @@
 package com.ixigo.service.impl;
 
-import com.ixigo.entity.JobSchedulingDetails;
+import com.ixigo.entity.TaskSchedulingDetails;
 import com.ixigo.exception.InternalServerException;
 import com.ixigo.exception.ServiceException;
 import com.ixigo.exception.codes.jobschedulingservice.ServiceExceptionCodes;
@@ -22,16 +22,16 @@ public class QuartzJobManagementService implements IJobManagementService {
     Scheduler scheduler;
 
     @Override
-    public String createJob(JobSchedulingDetails schedulingDetails) {
+    public String createJob(TaskSchedulingDetails schedulingDetails) {
         return createJobWithJobId(schedulingDetails, null);
     }
 
     @Override
-    public String createJobWithJobId(JobSchedulingDetails schedulingDetails, String jobId) {
+    public String createJobWithJobId(TaskSchedulingDetails schedulingDetails, String jobId) {
         JobDetail jobDetails = QuartzJobBuilder.buildJobWithJobId(schedulingDetails, jobId);
         Trigger jobTrigger = QuartzJobBuilder.buildTrigger(schedulingDetails);
         try {
-            log.info("Adding job with jobId: {}", jobDetails.getKey());
+            log.info("Adding job with taskId: {}", jobDetails.getKey());
             scheduler.scheduleJob(jobDetails, jobTrigger);
         } catch (ObjectAlreadyExistsException oaee) {
             log.error("Job ID already exists. [JOB-ID]: {}", jobDetails.getKey());

@@ -35,6 +35,6 @@ public class KafkaTaskPublisher implements IKafkaTaskPublisher {
         log.info("Topic to use: {}", topic.topic());
         IxigoKafkaProducer producer = kafkaProducerFactory.getKafkaProducer(topic);
         log.info("Producer fetched from factory.");
-        return ixigoKafkaClient.publish(producer, taskDetails.getJobId(), taskDetails);
+        return ixigoKafkaClient.publish(producer, taskDetails.getTaskId(), taskDetails);
     }
 }

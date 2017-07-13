@@ -13,7 +13,7 @@ import javax.validation.constraints.NotNull;
 @Data
 public class AddConsumersRequest {
     @NotBlank(message = RequestValidationExceptionConstants.TOPIC_NAME_IS_BLANK)
-    private String topicName;
+    private String topic;
 
     @Min(value = 1, message = RequestValidationExceptionConstants.INVALID_COUNT)
     @NotNull(message = RequestValidationExceptionConstants.INVALID_COUNT)

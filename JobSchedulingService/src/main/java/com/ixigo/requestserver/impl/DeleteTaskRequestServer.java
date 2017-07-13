@@ -1,8 +1,9 @@
-package com.ixigo.requestserver;
+package com.ixigo.requestserver.impl;
 
 import com.google.gson.JsonSyntaxException;
 import com.ixigo.request.jobschedulingservice.DeleteTaskRequest;
-import com.ixigo.service.IJobSchedulerRequestService;
+import com.ixigo.requestserver.IRequestServer;
+import com.ixigo.service.ITaskSchedulerRequestService;
 import com.ixigo.utils.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class DeleteTaskRequestServer implements IRequestServer {
     @Autowired
-    IJobSchedulerRequestService service;
+    ITaskSchedulerRequestService service;
 
     @Override
     public void serve(String requestJson) {

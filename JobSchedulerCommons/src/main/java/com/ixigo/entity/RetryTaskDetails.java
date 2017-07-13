@@ -6,7 +6,7 @@ import lombok.Data;
  * Created by dixant on 11/04/17.
  */
 @Data
-public class RetryJobDetails {
+public class RetryTaskDetails {
     private int retriesCount;
     private int maxRetriesAllowed;
     private int retryBase;

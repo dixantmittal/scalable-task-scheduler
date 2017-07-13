@@ -12,7 +12,7 @@
     <mvc:resources mapping="/resources/**" location="classpath:/resources"/>
 
     <bean id="jobQueuingServiceProvider"
-          class="com.ixigo.factory.JobQueuingServiceProvider"
+          class="com.ixigo.factory.TaskQueuingServiceProvider"
           factory-method="getInstance"/>
 
     <bean id="requestServerProvider"

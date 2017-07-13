@@ -10,6 +10,6 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class KafkaTaskDetails extends JobDetails {
-    String jobId;
+public class KafkaTaskDetails extends TaskDetails {
+    String taskId;
 }

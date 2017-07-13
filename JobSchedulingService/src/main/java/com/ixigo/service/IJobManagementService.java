@@ -1,6 +1,6 @@
 package com.ixigo.service;
 
-import com.ixigo.entity.JobSchedulingDetails;
+import com.ixigo.entity.TaskSchedulingDetails;
 
 /**
  * Created by dixant on 27/03/17.
@@ -8,14 +8,14 @@ import com.ixigo.entity.JobSchedulingDetails;
 public interface IJobManagementService {
     /*
     create a new job and
-    @return jobId
+    @return taskId
      */
-    String createJob(JobSchedulingDetails requestData);
+    String createJob(TaskSchedulingDetails requestData);
 
     /*
     create a new job with provided job id
-    @return jobId
+    @return taskId
      */
-    String createJobWithJobId(JobSchedulingDetails schedulingDetails, String jobId);
+    String createJobWithJobId(TaskSchedulingDetails schedulingDetails, String jobId);
 
 }

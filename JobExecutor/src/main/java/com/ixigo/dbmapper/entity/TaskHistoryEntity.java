@@ -7,7 +7,7 @@ import lombok.Data;
  */
 @Data
 public class TaskHistoryEntity {
-    private String jobId;
+    private String taskId;
     private String taskType;
     private String taskMetadata;
     private String executionStatus;

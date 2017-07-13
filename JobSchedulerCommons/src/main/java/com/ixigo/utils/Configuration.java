@@ -1,7 +1,7 @@
 package com.ixigo.utils;
 
 import com.ixigo.cache.CacheManager;
-import com.ixigo.cache.impl.ConfigCache;
+import com.ixigo.cache.impl.ConfigurationCache;
 import com.ixigo.constants.CommonConstants;
 import com.ixigo.constants.IConfigurationConstants;
 import com.ixigo.exception.ServiceException;
@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public class Configuration {
     public static Map<String, String> getConfigMap(String configType) {
-        ConfigCache configCache = CacheManager.getInstance().getCache(ConfigCache.class);
+        ConfigurationCache configCache = CacheManager.getInstance().getCache(ConfigurationCache.class);
         if (configCache == null) {
             throw new ServiceException(CommonExceptionCodes.CONFIG_CACHE_NOT_FOUND.code(),
                     CommonExceptionCodes.CONFIG_CACHE_NOT_FOUND.message());

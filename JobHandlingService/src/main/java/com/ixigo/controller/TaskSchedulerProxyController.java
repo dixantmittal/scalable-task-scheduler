@@ -4,19 +4,17 @@ import com.ixigo.constants.jobschedulingservice.RestURIConstants;
 import com.ixigo.exception.RequestValidationException;
 import com.ixigo.exception.codes.jobschedulingservice.RequestValidationExceptionCodes;
 import com.ixigo.request.jobschedulingservice.AddTaskRequest;
-import com.ixigo.request.jobschedulingservice.AddTaskWithJobIdRequest;
+import com.ixigo.request.jobschedulingservice.AddTaskWithTaskIdRequest;
 import com.ixigo.request.jobschedulingservice.DeleteTaskRequest;
 import com.ixigo.response.jobschedulingservice.AddTaskResponse;
 import com.ixigo.response.jobschedulingservice.DeleteTaskResponse;
-import com.ixigo.service.JobHandlerRequestService;
+import com.ixigo.service.TaskSchedulerRequestService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.ConstraintViolation;
-import javax.validation.Valid;
 import javax.validation.Validator;
 import java.util.Set;
 
@@ -25,26 +23,21 @@ import java.util.Set;
  */
 @Controller
 @Slf4j
-@RequestMapping(value = RestURIConstants.JOB_SCHEDULER_BASE_URI)
-public class JobHandlerRequestController {
+@RequestMapping(value = RestURIConstants.TASK_SCHEDULER_BASE_URI)
+public class TaskSchedulerProxyController {
 
     @Autowired
     Validator validator;
     @Autowired
-    JobHandlerRequestService service;
+    TaskSchedulerRequestService service;
 
     @RequestMapping(
             value = RestURIConstants.TASK,
             method = RequestMethod.POST,
             produces = RestURIConstants.APPLICATION_JSON)
     @ResponseBody
-    AddTaskResponse addTask(@RequestBody @Valid AddTaskRequest request, BindingResult results) {
-        if (results.hasErrors()) {
-            RequestValidationExceptionCodes error = RequestValidationExceptionCodes.forName(results.getAllErrors().get(0).getDefaultMessage());
-            log.error("Error occurred while adding task. Request: " + request + "\nError: " + error);
-            throw new RequestValidationException(error.code(), error.message());
-        }
-        return service.addTask(request);
+    AddTaskResponse addTask(@RequestBody AddTaskRequest request) {
+        return service.addTask(validateRequest(request));
     }
 
     @RequestMapping(
@@ -52,13 +45,8 @@ public class JobHandlerRequestController {
             method = RequestMethod.POST,
             produces = RestURIConstants.APPLICATION_JSON)
     @ResponseBody
-    AddTaskResponse addTask(@RequestBody @Valid AddTaskWithJobIdRequest request, BindingResult results) {
-        if (results.hasErrors()) {
-            RequestValidationExceptionCodes error = RequestValidationExceptionCodes.forName(results.getAllErrors().get(0).getDefaultMessage());
-            log.error("Error occurred while adding task. Request: " + request + "\nError: " + error);
-            throw new RequestValidationException(error.code(), error.message());
-        }
-        return service.addTask(request);
+    AddTaskResponse addTask(@RequestBody AddTaskWithTaskIdRequest request) {
+        return service.addTask(validateRequest(request));
     }
 
     @RequestMapping(
@@ -70,11 +58,10 @@ public class JobHandlerRequestController {
         DeleteTaskRequest request = new DeleteTaskRequest();
         request.setJobId(jobId);
         request.setCanRetry(Boolean.valueOf(canRetry));
-        validateRequest(request);
-        return service.deleteTask(request);
+        return service.deleteTask(validateRequest(request));
     }
 
-    <T> void validateRequest(T request) {
+    <T> T validateRequest(T request) {
         Set<ConstraintViolation<T>> constraintViolations = validator.validate(request);
         if (constraintViolations != null && constraintViolations.size() > 0) {
             log.error("Error occurred while validating request. Request: {}", request.getClass().getName());
@@ -82,5 +69,6 @@ public class JobHandlerRequestController {
                     .forName(constraintViolations.iterator().next().getMessage());
             throw new RequestValidationException(error.code(), error.message());
         }
+        return request;
     }
 }

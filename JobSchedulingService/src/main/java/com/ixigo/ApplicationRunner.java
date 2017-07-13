@@ -1,6 +1,6 @@
 package com.ixigo;
 
-import com.ixigo.service.IJobSchedulerRequestService;
+import com.ixigo.service.ITaskSchedulerRequestService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -23,7 +23,7 @@ import org.springframework.core.annotation.Order;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class ApplicationRunner {
     public static void main(String[] args) {
-        SpringApplication.run(ApplicationRunner.class, args).getBean(IJobSchedulerRequestService.class).startScheduler();
+        SpringApplication.run(ApplicationRunner.class, args).getBean(ITaskSchedulerRequestService.class).startScheduler();
     }
 
     @Bean

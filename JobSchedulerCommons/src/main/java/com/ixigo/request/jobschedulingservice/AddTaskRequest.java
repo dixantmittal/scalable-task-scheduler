@@ -1,6 +1,6 @@
 package com.ixigo.request.jobschedulingservice;
 
-import com.ixigo.entity.RetryJobDetails;
+import com.ixigo.entity.RetryTaskDetails;
 import com.ixigo.validation.jobschedulingservice.AddTaskRequestValidation;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,7 +20,7 @@ public class AddTaskRequest {
     private String taskMetadata;
     private Timestamp scheduledTime;
     private Integer priority;
-    private RetryJobDetails retryJobDetails;
+    private RetryTaskDetails retryTaskDetails;
     private Boolean canRetry;
 
     public AddTaskRequest(AddTaskRequest ob) {
@@ -28,7 +28,7 @@ public class AddTaskRequest {
         taskMetadata = ob.taskMetadata;
         scheduledTime = ob.scheduledTime;
         priority = ob.priority;
-        retryJobDetails = ob.retryJobDetails;
+        retryTaskDetails = ob.retryTaskDetails;
         canRetry = ob.canRetry;
     }
 }

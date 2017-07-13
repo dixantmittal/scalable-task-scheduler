@@ -7,5 +7,5 @@ import java.util.Map;
 /**
  * Created by dixant on 29/03/17.
  */
-public class ConfigCache extends AbstractCache<String, Map<String, String>> {
+public class ConfigurationCache extends AbstractCache<String, Map<String, String>> {
 }
