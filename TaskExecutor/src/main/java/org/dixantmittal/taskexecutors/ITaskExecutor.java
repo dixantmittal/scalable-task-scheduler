@@ -1,10 +1,10 @@
 package org.dixantmittal.taskexecutors;
 
-import org.dixantmittal.entity.KafkaTaskDetails;
+import org.dixantmittal.entity.Task;
 
 /**
  * Created by dixant on 29/03/17.
  */
 public interface ITaskExecutor {
-    void execute(KafkaTaskDetails taskDetails);
+    void execute(Task task);
 }

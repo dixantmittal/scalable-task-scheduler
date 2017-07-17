@@ -1,6 +1,6 @@
 package org.dixantmittal.httpclient;
 
-import org.dixantmittal.constants.jobexecutor.RestURIConstants;
+import org.dixantmittal.constants.taskexecutor.RestURIConstants;
 import org.dixantmittal.exception.GenericException;
 import org.dixantmittal.exception.InternalServerException;
 import org.dixantmittal.exception.ServiceException;

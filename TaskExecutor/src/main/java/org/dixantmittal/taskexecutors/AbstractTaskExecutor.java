@@ -1,24 +1,18 @@
 package org.dixantmittal.taskexecutors;
 
 import com.google.gson.JsonSyntaxException;
+import lombok.extern.slf4j.Slf4j;
 import org.dixantmittal.constants.ConfigurationConstants;
-import org.dixantmittal.constants.jobschedulingservice.RestURIConstants;
-import org.dixantmittal.dao.ITaskDao;
-import org.dixantmittal.dbmapper.entity.TaskHistoryEntity;
-import org.dixantmittal.entity.KafkaTaskDetails;
-import org.dixantmittal.entity.RetryTaskDetails;
-import org.dixantmittal.enums.Status;
+import org.dixantmittal.constants.taskmanager.RestURIConstants;
+import org.dixantmittal.entity.RetryTask;
+import org.dixantmittal.entity.Task;
 import org.dixantmittal.exception.GenericException;
 import org.dixantmittal.httpclient.HttpMethod;
 import org.dixantmittal.httpclient.HttpMode;
 import org.dixantmittal.httpclient.HttpUtils;
-import org.dixantmittal.response.jobschedulingservice.AddTaskResponse;
+import org.dixantmittal.response.taskmanager.AddTaskResponse;
 import org.dixantmittal.utils.Configuration;
-import org.dixantmittal.utils.IxigoDateUtils;
-import org.dixantmittal.utils.adapter.AddTaskWithTaskIdRequestAdapter;
-import org.dixantmittal.utils.adapter.TaskHistoryEntityAdapter;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.dixantmittal.utils.adapter.AddTaskRequestAdapter;
 
 import java.time.LocalDateTime;
 
@@ -28,51 +22,39 @@ import java.time.LocalDateTime;
 @Slf4j
 public abstract class AbstractTaskExecutor implements ITaskExecutor {
 
-    @Autowired
-    private ITaskDao taskDao;
-
     public abstract Boolean process(String meta) throws JsonSyntaxException;
 
     @Override
-    public void execute(KafkaTaskDetails taskDetails) {
-        log.info("Task received by Task Executor. [JOB-ID]: {}", taskDetails.getTaskId());
-        // create a task history object
-        TaskHistoryEntity taskHistory = TaskHistoryEntityAdapter.adapt(taskDetails);
+    public void execute(Task task) {
+        log.info("Task received by Task Executor. [TASK-ID]: {}", task.getTaskId());
         try {
-
             // perform the business logic of the task
-            Boolean response = process(taskDetails.getTaskMetadata());
-
-            taskHistory.setExecutionStatus((response ? Status.SUCCESS : Status.FAILURE).toString());
+            Boolean response = process(task.getTaskMetadata());
             if (!response) {
-                retryTask(taskDetails, taskHistory);
+                retryTask(task);
             }
-            log.info("Task execution success: {}. [TASK-ID]: {}", response, taskDetails.getTaskId());
+            log.info("Task execution success: {}. [TASK-ID]: {}", response, task.getTaskId());
         } catch (JsonSyntaxException jse) {
-            log.error("Wrong task meta passed to TaskMeta: " + taskDetails.getTaskMetadata());
-            taskHistory.setExecutionStatus(Status.FAILURE.toString());
-            taskHistory.setRemarks("Wrong task meta passed to TaskMeta");
+            log.error("Wrong task meta passed to TaskMeta: " + task.getTaskMetadata());
         } catch (Exception e) {
-            log.error("Error occurred while performing task. TaskId: {}. Exception: ", taskDetails.getTaskId(), e);
-            retryTask(taskDetails, taskHistory);
-            taskHistory.setExecutionStatus(Status.FAILURE.toString());
+            log.error("Error occurred while performing task. TaskId: {}. Exception: ", task.getTaskId(), e);
+            retryTask(task);
         }
-        taskDao.addTaskHistory(taskHistory);
     }
 
-    private void retryTask(KafkaTaskDetails metadata, TaskHistoryEntity taskHistory) {
+    private void retryTask(Task task) {
 
-        if (metadata.getRetryTaskDetails() == null) {
-            taskHistory.setRemarks("Retry details not found");
+        if (task.getRetryTask() == null) {
+            log.info("Retry details not found.");
             return;
         }
 
         // get retry logic
-        RetryTaskDetails retryDetails = metadata.getRetryTaskDetails();
+        RetryTask retryDetails = task.getRetryTask();
         int retryCount = retryDetails.getRetriesCount() + 1;
         int maxRetriesAllowed = retryDetails.getMaxRetriesAllowed();
         if (retryCount > maxRetriesAllowed) {
-            taskHistory.setRemarks("Retries exceeded");
+            log.error("RETRIES EXCEEDED.");
             return;
         }
         int retryBase = retryDetails.getRetryBase();
@@ -80,40 +62,34 @@ public abstract class AbstractTaskExecutor implements ITaskExecutor {
         int totalDelay = delayInSeconds * (int) Math.pow(retryCount, retryBase);
 
         // find the new time
-        LocalDateTime newScheduledTime = metadata.getScheduledTime().plusSeconds(totalDelay);
+        LocalDateTime newScheduledTime = task.getScheduledTime().plusSeconds(totalDelay);
 
         // increase retry count
         retryDetails.setRetriesCount(retryCount);
 
         // set new scheduled time
-        metadata.setScheduledTime(newScheduledTime);
+        task.setScheduledTime(newScheduledTime);
 
-        // add new time to task history
-        taskHistory.setNewScheduledTime(IxigoDateUtils.dateToString(newScheduledTime));
-        log.info("Trying to reschedule Task. [TASK-ID]: {}. [NEW TIME]: {}", metadata.getTaskId(), taskHistory.getNewScheduledTime());
-
-        taskHistory.setRemarks("Retrying task");
+        log.info("Trying to reschedule Task. [TASK-ID]: {}. [NEW TIME]: {}", task.getTaskId(), task.getScheduledTime());
 
         try {
-            String serverIp = Configuration.getGlobalProperty(ConfigurationConstants.JOB_SCHEDULING_SERVICE_SERVER_IP);
-            String serverPort = Configuration.getGlobalProperty(ConfigurationConstants.JOB_SCHEDULING_SERVICE_SERVER_PORT);
+            String serverIp = Configuration.getGlobalProperty(ConfigurationConstants.TASK_MANAGER_SERVER_IP);
+            String serverPort = Configuration.getGlobalProperty(ConfigurationConstants.TASK_MANAGER_SERVER_PORT);
 
             HttpUtils.processHttpRequest(
                     HttpUtils.URLBuilder.newURL()
                             .withHttpMode(HttpMode.HTTP)
                             .withServerIp(serverIp)
                             .withServerPort(serverPort)
-                            .withURI(RestURIConstants.TASK_SCHEDULER_BASE_URI + RestURIConstants.TASK + RestURIConstants.JOB_ID)
+                            .withURI(RestURIConstants.TASK_SCHEDULER_BASE_URI + RestURIConstants.TASK + RestURIConstants.TASK_ID)
                             .build(),
                     AddTaskResponse.class,
-                    AddTaskWithTaskIdRequestAdapter.adapt(metadata),
+                    AddTaskRequestAdapter.adapt(task),
                     HttpMethod.POST
             );
-            log.info("Task rescheduled. [TASK-ID]: {}. [NEW TIME]: {}", metadata.getTaskId(), taskHistory.getNewScheduledTime());
+            log.info("TASK RESCHEDULED. [TASK-ID]: {}", task.getTaskId());
         } catch (GenericException e) {
-            log.error("Could not add task to task scheduler for retry. [TASK-ID]: {}. Exception: {}", taskHistory.getTaskId(), e);
-            taskHistory.setRemarks("Could not add task to task scheduler for retry. " +
-                    "Reason: " + e.getMessage());
+            log.error("COULD NOT ADD TASK to TASK SCHEDULER for RETRY. [TASK-ID]: {}. Exception: ", task.getTaskId(), e);
         }
     }
 }
