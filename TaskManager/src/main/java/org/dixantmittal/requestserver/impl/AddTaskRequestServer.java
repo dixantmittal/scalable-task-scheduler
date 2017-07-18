@@ -1,11 +1,11 @@
 package org.dixantmittal.requestserver.impl;
 
 import com.google.gson.JsonSyntaxException;
-import org.dixantmittal.request.jobschedulingservice.AddTaskWithTaskIdRequest;
-import org.dixantmittal.requestserver.IRequestServer;
-import org.dixantmittal.service.ITaskSchedulerRequestService;
-import org.dixantmittal.utils.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.dixantmittal.request.taskmanager.AddTaskRequest;
+import org.dixantmittal.requestserver.IRequestServer;
+import org.dixantmittal.service.ITaskManagerRequestService;
+import org.dixantmittal.utils.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,13 +16,13 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class AddTaskRequestServer implements IRequestServer {
     @Autowired
-    ITaskSchedulerRequestService service;
+    ITaskManagerRequestService service;
 
     @Override
     public void serve(String requestJson) {
         try {
             log.info("creating addTask request from JSON.");
-            AddTaskWithTaskIdRequest request = JsonUtils.fromJson(requestJson, AddTaskWithTaskIdRequest.class);
+            AddTaskRequest request = JsonUtils.fromJson(requestJson, AddTaskRequest.class);
             service.addTask(request);
             log.info("request created: {}", request);
         } catch (JsonSyntaxException jse) {

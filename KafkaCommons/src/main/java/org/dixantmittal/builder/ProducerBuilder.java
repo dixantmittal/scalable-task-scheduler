@@ -24,8 +24,13 @@ public class ProducerBuilder<K, V> {
         return this;
     }
 
+    public ProducerBuilder withProperties(Properties properties) {
+        this.properties.putAll(properties);
+        return this;
+    }
+
     public ProducerBuilder loadDefaultProperties() {
-        properties.put("bootstrap.servers", "10.31.33.244:9092");
+        properties.put("bootstrap.servers", "localhost:9092");
         properties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         properties.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         return this;

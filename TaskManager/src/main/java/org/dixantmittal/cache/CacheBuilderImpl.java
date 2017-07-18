@@ -1,13 +1,13 @@
 package org.dixantmittal.cache;
 
+import lombok.extern.slf4j.Slf4j;
 import org.dixantmittal.cache.impl.ConfigurationCache;
 import org.dixantmittal.cache.service.ICacheBuilder;
-import org.dixantmittal.constants.jobschedulingservice.ServiceConstants;
+import org.dixantmittal.constants.taskmanager.ServiceConstants;
 import org.dixantmittal.dao.IConfigurationDao;
 import org.dixantmittal.dbmapper.entity.ConfigDetails;
 import org.dixantmittal.exception.InternalServerException;
 import org.dixantmittal.utils.Configuration;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +15,7 @@ import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.dixantmittal.constants.jobschedulingservice.ServiceConstants.REQUEST_CONSUMER_PROPERTIES_CACHE;
+import static org.dixantmittal.constants.taskmanager.ServiceConstants.REQUEST_CONSUMER_PROPERTIES_CACHE;
 
 /**
  * Created by dixant on 29/03/17.

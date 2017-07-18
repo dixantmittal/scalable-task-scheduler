@@ -15,6 +15,7 @@
         <module>TaskManager</module>
         <module>TaskManagerProxy</module>
         <module>TaskExecutor</module>
+        <module>POC</module>
     </modules>
 
 

@@ -32,6 +32,11 @@ public class ConsumerBuilder<K, V> {
         return this;
     }
 
+    public ConsumerBuilder<K, V> withProperties(Properties properties) {
+        this.properties.putAll(properties);
+        return this;
+    }
+
     public ConsumerBuilder<K, V> loadDefaultProperties() {
         properties.put("bootstrap.servers", "localhost:9092");
         properties.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");

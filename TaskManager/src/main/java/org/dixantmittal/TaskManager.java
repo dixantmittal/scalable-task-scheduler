@@ -1,11 +1,13 @@
 package org.dixantmittal;
 
+import org.dixantmittal.service.ITaskManagerRequestService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -16,15 +18,9 @@ import org.springframework.core.annotation.Order;
 @SpringBootApplication
 @EnableAutoConfiguration
 @ComponentScan("org.dixantmittal")
-@Configuration
-@Order(Ordered.HIGHEST_PRECEDENCE)
-public class ApplicationRunner {
+@ImportResource("application-context.xml")
+public class TaskManager {
     public static void main(String[] args) {
-        SpringApplication.run(ApplicationRunner.class, args);
-    }
-
-    @Bean
-    public PropertySourcesPlaceholderConfigurer testProperties() {
-        return new PropertySourcesPlaceholderConfigurer();
+        SpringApplication.run(TaskManager.class, args).getBean(ITaskManagerRequestService.class).startScheduler();
     }
 }

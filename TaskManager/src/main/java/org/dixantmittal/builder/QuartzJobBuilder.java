@@ -1,14 +1,14 @@
-package org.dixantmittal.factory;
+package org.dixantmittal.builder;
 
-import org.dixantmittal.constants.jobschedulingservice.ServiceConstants;
+import org.dixantmittal.constants.taskmanager.ServiceConstants;
 import org.dixantmittal.entity.AddToExecutionQueueJob;
 import org.dixantmittal.entity.TaskSchedulingDetails;
 import org.dixantmittal.utils.IDGenerationUtils;
 import org.dixantmittal.utils.JsonUtils;
 import org.quartz.*;
 
-import java.util.Date;
 import java.time.ZoneId;
+import java.util.Date;
 
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 
@@ -22,10 +22,10 @@ public class QuartzJobBuilder {
 
     public static JobDetail buildJobWithJobId(TaskSchedulingDetails jobDetails, String jobId) {
 
-        jobId = (jobId == null) ? IDGenerationUtils.generateRandomUUID(ServiceConstants.JOB_IDENTIFIER) : jobId;
+        jobId = (jobId == null) ? IDGenerationUtils.generateRandomUUID(ServiceConstants.TASK_IDENTIFIER) : jobId;
         JobDataMap jobDataMap = new JobDataMap();
-        jobDataMap.put(ServiceConstants.JOB_DETAILS, JsonUtils.toJson(jobDetails));
-        jobDataMap.put(ServiceConstants.JOB_ID, jobId);
+        jobDataMap.put(ServiceConstants.TASK_DETAILS, JsonUtils.toJson(jobDetails));
+        jobDataMap.put(ServiceConstants.TASK_ID, jobId);
         JobDetail jobDetail = JobBuilder.newJob(AddToExecutionQueueJob.class)
                 .withIdentity(jobId, ServiceConstants.DEFAULT_GROUP_ID)
                 .usingJobData(jobDataMap)

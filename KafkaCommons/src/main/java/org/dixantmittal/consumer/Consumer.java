@@ -39,6 +39,7 @@ public class Consumer<K, V> extends Thread {
     @Override
     public void run() {
         // subscribe topics
+        log.info("Subscribing to topics: {}", topic);
         consumer.subscribe(Arrays.asList(topic));
 
         // poll and process records
@@ -49,6 +50,7 @@ public class Consumer<K, V> extends Thread {
         }
 
         // when the shutdown is called, close the consumer connection.
+        log.info("Consumer {} is being closed down.", this.getThreadGroup());
         consumer.close();
     }
 
@@ -64,7 +66,7 @@ public class Consumer<K, V> extends Thread {
                 continue;
             }
 
-            log.info("Executing a batch of tasks.");
+            log.info("Processing a batch of records.");
             if (!processor.process(records)) {
                 log.error("ERROR occurred while PROCESSING RECORDS.");
             }

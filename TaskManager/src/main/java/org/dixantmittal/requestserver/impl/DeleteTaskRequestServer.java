@@ -1,11 +1,11 @@
 package org.dixantmittal.requestserver.impl;
 
 import com.google.gson.JsonSyntaxException;
-import org.dixantmittal.request.jobschedulingservice.DeleteTaskRequest;
-import org.dixantmittal.requestserver.IRequestServer;
-import org.dixantmittal.service.ITaskSchedulerRequestService;
-import org.dixantmittal.utils.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.dixantmittal.request.taskmanager.DeleteTaskRequest;
+import org.dixantmittal.requestserver.IRequestServer;
+import org.dixantmittal.service.ITaskManagerRequestService;
+import org.dixantmittal.utils.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class DeleteTaskRequestServer implements IRequestServer {
     @Autowired
-    ITaskSchedulerRequestService service;
+    ITaskManagerRequestService service;
 
     @Override
     public void serve(String requestJson) {

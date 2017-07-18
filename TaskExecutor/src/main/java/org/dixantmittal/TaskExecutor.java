@@ -1,7 +1,6 @@
 package org.dixantmittal;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.dixantmittal.builder.ConsumerBuilder;
@@ -12,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+
+import java.util.Properties;
 
 /**
  * Created by dixant on 24/03/17.
@@ -34,11 +35,12 @@ public class TaskExecutor implements CommandLineRunner {
     public void run(String... args) throws Exception {
         String taskType = args[0];
         String topic = args[1];
+        Properties properties;
+        (properties = new Properties()).load(this.getClass().getClassLoader().getResourceAsStream("kafka.properties"));
         ConsumerBuilder.<String, Task>newConsumer()
-                .loadDefaultProperties()
-                .addProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.dixantmittal.serializer.TaskDeserializer")
+                .withProperties(properties)
                 .withTopics(topic)
-                .withGroupId("test")
+                .withGroupId(properties.getProperty("group.id"))
                 .withProcessor(new Consumer.Processor<String, Task>() {
                     @Override
                     protected Boolean process(ConsumerRecords<String, Task> records) {

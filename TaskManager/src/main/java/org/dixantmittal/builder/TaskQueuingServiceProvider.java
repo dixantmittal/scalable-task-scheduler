@@ -1,4 +1,4 @@
-package org.dixantmittal.factory;
+package org.dixantmittal.builder;
 
 import org.dixantmittal.service.ITaskQueuingService;
 import org.springframework.beans.factory.annotation.Autowired;

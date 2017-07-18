@@ -3,36 +3,25 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:mvc="http://www.springframework.org/schema/mvc"
-       xmlns:task="http://www.springframework.org/schema/task"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
-        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
-        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.1.xsd">
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd">
 
     <mvc:annotation-driven/>
     <mvc:resources mapping="/resources/**" location="classpath:/resources"/>
 
     <bean id="jobQueuingServiceProvider"
-          class="org.dixantmittal.factory.TaskQueuingServiceProvider"
+          class="org.dixantmittal.builder.TaskQueuingServiceProvider"
           factory-method="getInstance"/>
 
     <bean id="requestServerProvider"
-          class="org.dixantmittal.factory.RequestServerProvider"
+          class="org.dixantmittal.builder.RequestServerProvider"
           factory-method="getInstance"/>
 
     <bean id="scheduler"
           class="org.quartz.impl.StdSchedulerFactory"
           factory-method="getDefaultScheduler"/>
 
-    <bean id="cacheBuilderImpl" class="CacheBuilderImpl"/>
-
-    <!-- Task scheduler for Cache Update. -->
-    <task:scheduled-tasks scheduler="cacheUpdateScheduler">
-        <task:scheduled ref="cacheBuilderImpl" method="buildCaches"
-                        cron="0 0/${jobSchedulor.cacheUpdater.delay} 0-23 * * *"/>
-    </task:scheduled-tasks>
-    <task:scheduler id="cacheUpdateScheduler" pool-size="1"/>
-
-    <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="">
+    <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource">
         <property name="driverClassName" value="${database.driverClassName}"/>
         <property name="url" value="${database.url}"/>
         <property name="username" value="${database.username}"/>

@@ -81,7 +81,7 @@ public abstract class AbstractTaskExecutor implements ITaskExecutor {
                             .withHttpMode(HttpMode.HTTP)
                             .withServerIp(serverIp)
                             .withServerPort(serverPort)
-                            .withURI(RestURIConstants.TASK_SCHEDULER_BASE_URI + RestURIConstants.TASK + RestURIConstants.TASK_ID)
+                            .withURI(RestURIConstants.TASK_MANAGER_BASE_URI + RestURIConstants.TASK + RestURIConstants.TASK_ID)
                             .build(),
                     AddTaskResponse.class,
                     AddTaskRequestAdapter.adapt(task),

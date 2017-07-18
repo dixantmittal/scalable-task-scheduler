@@ -1,10 +1,10 @@
 package org.dixantmittal.entity;
 
+import lombok.extern.slf4j.Slf4j;
+import org.dixantmittal.builder.TaskQueuingServiceProvider;
 import org.dixantmittal.constants.ConfigurationConstants;
-import org.dixantmittal.factory.TaskQueuingServiceProvider;
 import org.dixantmittal.service.ITaskQueuingService;
 import org.dixantmittal.utils.Configuration;
-import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -27,14 +27,14 @@ public class AddToExecutionQueueJob implements Job {
         if (context.getRefireCount() < maxRefireLimit) {
             JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
             log.info("Trying to add...");
-            Boolean success = taskQueuingService.addJobToExecutionQueue(jobDataMap);
+            Boolean success = taskQueuingService.addTaskToExecutionQueue(jobDataMap);
             if (!success) {
                 log.error("Could not push task to queue. Trying again. [Task-ID]: {}", context.getJobDetail().getKey());
                 JobExecutionException jee = new JobExecutionException("Could not push task to queue. Trying again.");
                 jee.setRefireImmediately(true);
                 throw jee;
             }
-            log.info("Task published on Kafka queue. [TASK-ID]: {}");
+            log.info("Task published on Kafka queue. [Task-ID]: {}", context.getJobDetail().getKey());
         } else {
             log.error("Retries exceeded. [Task-ID]: {}", context.getJobDetail().getKey());
             JobExecutionException jee = new JobExecutionException("Retries exceeded");

@@ -1,15 +1,14 @@
 package org.dixantmittal.controller;
 
-import org.dixantmittal.constants.jobschedulingservice.RestURIConstants;
-import org.dixantmittal.exception.RequestValidationException;
-import org.dixantmittal.exception.codes.jobschedulingservice.RequestValidationExceptionCodes;
-import org.dixantmittal.request.jobschedulingservice.AddTaskRequest;
-import org.dixantmittal.request.jobschedulingservice.AddTaskWithTaskIdRequest;
-import org.dixantmittal.request.jobschedulingservice.DeleteTaskRequest;
-import org.dixantmittal.response.jobschedulingservice.AddTaskResponse;
-import org.dixantmittal.response.jobschedulingservice.DeleteTaskResponse;
-import org.dixantmittal.service.TaskSchedulerRequestService;
 import lombok.extern.slf4j.Slf4j;
+import org.dixantmittal.constants.taskmanager.RestURIConstants;
+import org.dixantmittal.exception.RequestValidationException;
+import org.dixantmittal.exception.codes.taskmanager.RequestValidationExceptionCodes;
+import org.dixantmittal.request.taskmanager.AddTaskRequest;
+import org.dixantmittal.request.taskmanager.DeleteTaskRequest;
+import org.dixantmittal.response.GenericResponse;
+import org.dixantmittal.response.taskmanager.AddTaskResponse;
+import org.dixantmittal.service.RequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -23,13 +22,13 @@ import java.util.Set;
  */
 @Controller
 @Slf4j
-@RequestMapping(value = RestURIConstants.TASK_SCHEDULER_BASE_URI)
-public class TaskSchedulerProxyController {
+@RequestMapping(value = RestURIConstants.TASK_MANAGER_BASE_URI)
+public class RequestController {
 
     @Autowired
     Validator validator;
     @Autowired
-    TaskSchedulerRequestService service;
+    RequestService service;
 
     @RequestMapping(
             value = RestURIConstants.TASK,
@@ -41,11 +40,11 @@ public class TaskSchedulerProxyController {
     }
 
     @RequestMapping(
-            value = RestURIConstants.TASK + RestURIConstants.JOB_ID,
+            value = RestURIConstants.TASK + RestURIConstants.TASK_ID,
             method = RequestMethod.POST,
             produces = RestURIConstants.APPLICATION_JSON)
     @ResponseBody
-    AddTaskResponse addTask(@RequestBody AddTaskWithTaskIdRequest request) {
+    AddTaskResponse addTaskWithJobId(@RequestBody AddTaskRequest request) {
         return service.addTask(validateRequest(request));
     }
 
@@ -54,10 +53,8 @@ public class TaskSchedulerProxyController {
             method = RequestMethod.DELETE,
             produces = RestURIConstants.APPLICATION_JSON)
     @ResponseBody
-    DeleteTaskResponse deleteTask(@RequestParam(value = "job-id", required = false) String jobId, @RequestParam(value = "can-retry", required = false) String canRetry) {
-        DeleteTaskRequest request = new DeleteTaskRequest();
-        request.setJobId(jobId);
-        request.setCanRetry(Boolean.valueOf(canRetry));
+    GenericResponse deleteTask(@RequestParam(value = "taskId", required = false) String taskId, @RequestParam(value = "canRetry", required = false) String canRetry) {
+        DeleteTaskRequest request = new DeleteTaskRequest(taskId, Boolean.valueOf(canRetry));
         return service.deleteTask(validateRequest(request));
     }
 

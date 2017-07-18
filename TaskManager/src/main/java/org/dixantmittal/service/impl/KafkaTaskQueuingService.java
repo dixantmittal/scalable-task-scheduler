@@ -1,12 +1,14 @@
 package org.dixantmittal.service.impl;
 
-import org.dixantmittal.constants.jobschedulingservice.ServiceConstants;
-import org.dixantmittal.entity.KafkaTaskDetails;
-import org.dixantmittal.publisher.IKafkaTaskPublisher;
+import lombok.extern.slf4j.Slf4j;
+import org.dixantmittal.builder.ProducerBuilder;
+import org.dixantmittal.cache.CacheManager;
+import org.dixantmittal.cache.TopicNameCache;
+import org.dixantmittal.constants.taskmanager.ServiceConstants;
+import org.dixantmittal.entity.Task;
+import org.dixantmittal.producer.Producer;
 import org.dixantmittal.service.ITaskQueuingService;
 import org.dixantmittal.utils.JsonUtils;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -18,15 +20,22 @@ import java.util.Map;
 @Service
 public class KafkaTaskQueuingService implements ITaskQueuingService {
 
-    @Autowired
-    private IKafkaTaskPublisher kafkaTaskPublisher;
+    private Producer<String, Task> producer;
+
+    public KafkaTaskQueuingService() {
+        producer = ProducerBuilder.<String, Task>newProducer()
+                .loadDefaultProperties()
+                .addProperty("value.serializer", "org.dixantmittal.serializer.TaskSerializer")
+                .getProducer();
+    }
 
     @Override
-    public Boolean addJobToExecutionQueue(Map<String, Object> jobDataMap) {
-        String jobDetails = jobDataMap.get(ServiceConstants.JOB_DETAILS).toString();
-        KafkaTaskDetails taskDetails = JsonUtils.fromJson(jobDetails, KafkaTaskDetails.class);
-        taskDetails.setTaskId(jobDataMap.get(ServiceConstants.JOB_ID).toString());
-        log.info("Kafka Task Details constructed: {}", taskDetails);
-        return kafkaTaskPublisher.publishTask(taskDetails);
+    public Boolean addTaskToExecutionQueue(Map<String, Object> jobDataMap) {
+        String taskJson = jobDataMap.get(ServiceConstants.TASK_DETAILS).toString();
+        Task task = JsonUtils.fromJson(taskJson, Task.class);
+        task.setTaskId(jobDataMap.get(ServiceConstants.TASK_ID).toString());
+        log.info("Task: {}", task);
+        producer.send(CacheManager.getInstance().getCache(TopicNameCache.class).get(task.getTaskType()), task.getTaskType(), task);
+        return true;
     }
 }
