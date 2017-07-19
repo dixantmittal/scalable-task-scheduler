@@ -13,7 +13,7 @@
         <module>TaskSchedulerCommons</module>
         <module>KafkaCommons</module>
         <module>TaskManager</module>
-        <module>TaskManagerProxy</module>
+        <module>TaskSchedulerClient</module>
         <module>TaskExecutor</module>
         <module>POC</module>
     </modules>

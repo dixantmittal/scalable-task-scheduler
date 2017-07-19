@@ -3,6 +3,7 @@ package org.dixantmittal.request.taskmanager;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.dixantmittal.entity.Task;
 import org.dixantmittal.exception.constants.RequestValidationExceptionConstants;
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -15,5 +16,12 @@ import org.hibernate.validator.constraints.NotBlank;
 public class DeleteTaskRequest {
     @NotBlank(message = RequestValidationExceptionConstants.JOB_ID_IS_BLANK)
     private String taskId;
-    private Boolean canRetry;
+
+    public static class Adapter {
+        public static DeleteTaskRequest adapt(Task task) {
+            DeleteTaskRequest request = new DeleteTaskRequest();
+            request.taskId = task.getTaskId();
+            return request;
+        }
+    }
 }

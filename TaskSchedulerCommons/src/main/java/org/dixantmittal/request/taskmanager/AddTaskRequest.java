@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.dixantmittal.entity.RetryTask;
+import org.dixantmittal.entity.Task;
 
 import java.sql.Timestamp;
 
@@ -20,5 +21,16 @@ public class AddTaskRequest {
     private Timestamp scheduledTime;
     private Integer priority;
     private RetryTask retryTask;
-    private Boolean canRetry;
+
+    public static class Adapter {
+        public static AddTaskRequest adapt(Task task) {
+            AddTaskRequest request = new AddTaskRequest();
+            request.taskId = task.getTaskId();
+            request.taskType = task.getTaskType();
+            request.taskMetadata = task.getTaskMetadata();
+            request.scheduledTime = Timestamp.valueOf(task.getScheduledTime());
+            request.retryTask = task.getRetryTask();
+            return request;
+        }
+    }
 }

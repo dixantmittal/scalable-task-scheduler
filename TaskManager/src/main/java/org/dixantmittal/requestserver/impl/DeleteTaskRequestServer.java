@@ -2,6 +2,7 @@ package org.dixantmittal.requestserver.impl;
 
 import com.google.gson.JsonSyntaxException;
 import lombok.extern.slf4j.Slf4j;
+import org.dixantmittal.entity.Task;
 import org.dixantmittal.request.taskmanager.DeleteTaskRequest;
 import org.dixantmittal.requestserver.IRequestServer;
 import org.dixantmittal.service.ITaskManagerRequestService;
@@ -22,7 +23,7 @@ public class DeleteTaskRequestServer implements IRequestServer {
     public void serve(String requestJson) {
         try {
             log.info("creating deleteTask request from JSON.");
-            DeleteTaskRequest request = JsonUtils.fromJson(requestJson, DeleteTaskRequest.class);
+            DeleteTaskRequest request = DeleteTaskRequest.Adapter.adapt(JsonUtils.fromJson(requestJson, Task.class));
             service.deleteTask(request);
             log.info("delete task created: {}", request);
         } catch (JsonSyntaxException jse) {

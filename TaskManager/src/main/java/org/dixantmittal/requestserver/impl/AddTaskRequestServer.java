@@ -2,6 +2,7 @@ package org.dixantmittal.requestserver.impl;
 
 import com.google.gson.JsonSyntaxException;
 import lombok.extern.slf4j.Slf4j;
+import org.dixantmittal.entity.Task;
 import org.dixantmittal.request.taskmanager.AddTaskRequest;
 import org.dixantmittal.requestserver.IRequestServer;
 import org.dixantmittal.service.ITaskManagerRequestService;
@@ -22,7 +23,7 @@ public class AddTaskRequestServer implements IRequestServer {
     public void serve(String requestJson) {
         try {
             log.info("creating addTask request from JSON.");
-            AddTaskRequest request = JsonUtils.fromJson(requestJson, AddTaskRequest.class);
+            AddTaskRequest request = AddTaskRequest.Adapter.adapt(JsonUtils.fromJson(requestJson, Task.class));
             service.addTask(request);
             log.info("request created: {}", request);
         } catch (JsonSyntaxException jse) {
