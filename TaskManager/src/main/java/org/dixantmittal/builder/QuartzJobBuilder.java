@@ -2,7 +2,7 @@ package org.dixantmittal.builder;
 
 import org.dixantmittal.constants.taskmanager.ServiceConstants;
 import org.dixantmittal.entity.AddToExecutionQueueJob;
-import org.dixantmittal.entity.TaskSchedulingDetails;
+import org.dixantmittal.entity.Task;
 import org.dixantmittal.utils.IDGenerationUtils;
 import org.dixantmittal.utils.JsonUtils;
 import org.quartz.*;
@@ -10,21 +10,19 @@ import org.quartz.*;
 import java.time.ZoneId;
 import java.util.Date;
 
+import static org.quartz.CronScheduleBuilder.cronSchedule;
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 
 /**
  * Created by dixant on 27/03/17.
  */
 public class QuartzJobBuilder {
-    public static JobDetail buildJob(TaskSchedulingDetails jobDetails) {
-        return buildJobWithJobId(jobDetails, null);
-    }
 
-    public static JobDetail buildJobWithJobId(TaskSchedulingDetails jobDetails, String jobId) {
+    public static JobDetail buildJob(Task task) {
 
-        jobId = (jobId == null) ? IDGenerationUtils.generateRandomUUID(ServiceConstants.TASK_IDENTIFIER) : jobId;
+        String jobId = task.getTaskId();
         JobDataMap jobDataMap = new JobDataMap();
-        jobDataMap.put(ServiceConstants.TASK_DETAILS, JsonUtils.toJson(jobDetails));
+        jobDataMap.put(ServiceConstants.TASK_JSON, JsonUtils.toJson(task));
         jobDataMap.put(ServiceConstants.TASK_ID, jobId);
         JobDetail jobDetail = JobBuilder.newJob(AddToExecutionQueueJob.class)
                 .withIdentity(jobId, ServiceConstants.DEFAULT_GROUP_ID)
@@ -33,16 +31,35 @@ public class QuartzJobBuilder {
         return jobDetail;
     }
 
-    public static Trigger buildTrigger(TaskSchedulingDetails jobDetails) {
-        int priority = jobDetails.getPriority();
+    public static Trigger buildTrigger(Task task) {
         Trigger jobTrigger = TriggerBuilder.newTrigger()
                 .withIdentity(IDGenerationUtils.generateRandomUUID(ServiceConstants.TRIGGER_IDENTIFIER), ServiceConstants.DEFAULT_GROUP_ID)
-                .startAt(Date.from(jobDetails.getScheduledTime().atZone(ZoneId.systemDefault()).toInstant()))
-                .withSchedule(simpleSchedule().withMisfireHandlingInstructionFireNow())
-                .withPriority(priority)
+                .startAt(getStartTime(task))
+                .withSchedule(getScheduleBuilder(task))
+                .withPriority(task.getPriority())
                 .build();
 
         return jobTrigger;
+    }
+
+    private static Date getStartTime(Task task) {
+        switch (task.getSchedulingType()) {
+            case CRON:
+            default:
+                return new Date();
+            case ONE_TIME:
+                return Date.from(task.getExecutionTime().atZone(ZoneId.systemDefault()).toInstant());
+        }
+    }
+
+    private static ScheduleBuilder getScheduleBuilder(Task task) {
+        switch (task.getSchedulingType()) {
+            case CRON:
+                return cronSchedule(task.getCronExp());
+            case ONE_TIME:
+            default:
+                return simpleSchedule().withMisfireHandlingInstructionFireNow();
+        }
     }
 
 }

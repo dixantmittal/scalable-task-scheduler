@@ -5,7 +5,7 @@ package org.dixantmittal.constants.taskmanager;
  */
 public interface ServiceConstants {
 
-    String TASK_DETAILS = "TASK_DETAILS";
+    String TASK_JSON = "TASK_JSON";
     String TASK_IDENTIFIER = "TASK";
     String TRIGGER_IDENTIFIER = "TRIGGER";
     String DEFAULT_GROUP_ID = "DEFAULT_GROUP";

@@ -2,7 +2,6 @@ package org.dixantmittal.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.dixantmittal.constants.taskmanager.RestURIConstants;
-import org.dixantmittal.request.taskmanager.DeleteTaskRequest;
 import org.dixantmittal.response.GenericResponse;
 import org.dixantmittal.service.ITaskManagerRequestService;
 import org.dixantmittal.validation.RequestValidator;
@@ -32,9 +31,7 @@ public class TaskManagerRequestController {
             method = RequestMethod.DELETE,
             produces = RestURIConstants.APPLICATION_JSON)
     @ResponseBody
-    GenericResponse deleteTask(@RequestParam(value = "taskId", required = false) String jobId) {
-        DeleteTaskRequest request = new DeleteTaskRequest();
-        request.setTaskId(jobId);
-        return requestService.deleteTask(validator.validate(request));
+    GenericResponse deleteTask(@RequestParam(value = "taskId", required = false) String taskId) {
+        return requestService.deleteTask(taskId);
     }
 }

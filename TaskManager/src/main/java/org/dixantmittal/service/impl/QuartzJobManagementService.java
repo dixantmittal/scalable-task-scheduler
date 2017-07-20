@@ -1,12 +1,12 @@
 package org.dixantmittal.service.impl;
 
-import org.dixantmittal.entity.TaskSchedulingDetails;
+import lombok.extern.slf4j.Slf4j;
+import org.dixantmittal.builder.QuartzJobBuilder;
+import org.dixantmittal.entity.Task;
 import org.dixantmittal.exception.InternalServerException;
 import org.dixantmittal.exception.ServiceException;
 import org.dixantmittal.exception.codes.taskmanager.ServiceExceptionCodes;
-import org.dixantmittal.builder.QuartzJobBuilder;
 import org.dixantmittal.service.IJobManagementService;
-import lombok.extern.slf4j.Slf4j;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,14 +22,9 @@ public class QuartzJobManagementService implements IJobManagementService {
     Scheduler scheduler;
 
     @Override
-    public String createJob(TaskSchedulingDetails schedulingDetails) {
-        return createJobWithJobId(schedulingDetails, null);
-    }
-
-    @Override
-    public String createJobWithJobId(TaskSchedulingDetails schedulingDetails, String jobId) {
-        JobDetail jobDetails = QuartzJobBuilder.buildJobWithJobId(schedulingDetails, jobId);
-        Trigger jobTrigger = QuartzJobBuilder.buildTrigger(schedulingDetails);
+    public String createTask(Task task) {
+        JobDetail jobDetails = QuartzJobBuilder.buildJob(task);
+        Trigger jobTrigger = QuartzJobBuilder.buildTrigger(task);
         try {
             log.info("Adding job with taskId: {}", jobDetails.getKey());
             scheduler.scheduleJob(jobDetails, jobTrigger);

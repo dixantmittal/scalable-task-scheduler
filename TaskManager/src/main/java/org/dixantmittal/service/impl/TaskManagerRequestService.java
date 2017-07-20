@@ -4,18 +4,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.dixantmittal.constants.taskmanager.ServiceConstants;
 import org.dixantmittal.entity.RequestConsumers;
 import org.dixantmittal.entity.Status;
-import org.dixantmittal.entity.TaskSchedulingDetails;
+import org.dixantmittal.entity.Task;
 import org.dixantmittal.exception.InternalServerException;
 import org.dixantmittal.exception.ServiceException;
 import org.dixantmittal.exception.codes.taskmanager.ServiceExceptionCodes;
-import org.dixantmittal.request.taskmanager.AddTaskRequest;
-import org.dixantmittal.request.taskmanager.DeleteTaskRequest;
 import org.dixantmittal.request.taskmanager.SchedulerRequest;
 import org.dixantmittal.response.GenericResponse;
 import org.dixantmittal.response.taskmanager.AddTaskResponse;
 import org.dixantmittal.service.IJobManagementService;
 import org.dixantmittal.service.ITaskManagerRequestService;
-import org.dixantmittal.utils.adapter.TaskSchedulingDetailsAdapter;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,26 +36,25 @@ public class TaskManagerRequestService implements ITaskManagerRequestService {
     private IJobManagementService jobManagementService;
     private volatile Lock _LOCK = new ReentrantLock();
 
-    public AddTaskResponse addTask(AddTaskRequest request) {
-        TaskSchedulingDetails taskDetails = TaskSchedulingDetailsAdapter.adapt(request);
-        String jobId = jobManagementService.createJobWithJobId(taskDetails, request.getTaskId());
+    public AddTaskResponse addTask(Task task) {
+        String jobId = jobManagementService.createTask(task);
         log.info("Job added to Job Scheduler. [JOB-ID]: {}", jobId);
         return new AddTaskResponse(Status.SUCCESS, jobId);
     }
 
     @Override
-    public GenericResponse deleteTask(DeleteTaskRequest request) {
+    public GenericResponse deleteTask(String taskId) {
         try {
-            if (scheduler.checkExists(jobKey(request.getTaskId(), ServiceConstants.DEFAULT_GROUP_ID))) {
-                scheduler.deleteJob(jobKey(request.getTaskId(), ServiceConstants.DEFAULT_GROUP_ID));
+            if (scheduler.checkExists(jobKey(taskId, ServiceConstants.DEFAULT_GROUP_ID))) {
+                scheduler.deleteJob(jobKey(taskId, ServiceConstants.DEFAULT_GROUP_ID));
             } else {
-                log.error("TASK ID does not exist. [TASK-ID]: {}", request.getTaskId());
+                log.error("TASK ID does not exist. [TASK-ID]: {}", taskId);
                 throw new ServiceException(
                         ServiceExceptionCodes.TASK_ID_DOES_NOT_EXIST.code(),
                         ServiceExceptionCodes.TASK_ID_DOES_NOT_EXIST.message()
                 );
             }
-            log.info("Job removed from Job Scheduler. [JOB-ID]: {}", request.getTaskId());
+            log.info("Job removed from Job Scheduler. [JOB-ID]: {}", taskId);
         } catch (SchedulerException e) {
             log.error("Scheduler exception occurred. Exception: {}", e);
             throw new InternalServerException();

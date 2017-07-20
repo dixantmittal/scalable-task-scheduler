@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.dixantmittal.client.TaskSchedulerClient;
 import org.dixantmittal.constants.taskmanager.RestURIConstants;
 import org.dixantmittal.constants.taskmanagerproxy.ServiceConstants;
+import org.dixantmittal.entity.SchedulingType;
 import org.dixantmittal.entity.Status;
 import org.dixantmittal.entity.Task;
 import org.dixantmittal.exception.ExceptionResponse;
@@ -49,7 +50,7 @@ public class TaskSchedulerClientImpl implements TaskSchedulerClient {
 
     @Override
     public String deleteTask(String taskId, Boolean retryable) {
-        Task task = new Task();
+        Task task = new Task(SchedulingType.ONE_TIME);
         task.setTaskId(taskId);
 
         log.info("Trying to connect to scheduling service to delete task...");

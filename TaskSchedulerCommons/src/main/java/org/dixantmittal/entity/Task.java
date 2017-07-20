@@ -2,7 +2,6 @@ package org.dixantmittal.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -11,11 +10,17 @@ import java.time.LocalDateTime;
  */
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 public class Task {
-    protected String taskId;
-    protected String taskType;
-    protected String taskMetadata;
-    protected LocalDateTime scheduledTime;
-    protected RetryTask retryTask;
+    private String taskId;
+    private SchedulingType schedulingType;
+    private String taskType;
+    private String taskMetadata;
+    private Retry retry;
+    private int priority;
+    private LocalDateTime executionTime;
+    private String cronExp;
+
+    public Task(SchedulingType type) {
+        this.schedulingType = type;
+    }
 }

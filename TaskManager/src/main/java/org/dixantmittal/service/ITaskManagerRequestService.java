@@ -1,7 +1,6 @@
 package org.dixantmittal.service;
 
-import org.dixantmittal.request.taskmanager.AddTaskRequest;
-import org.dixantmittal.request.taskmanager.DeleteTaskRequest;
+import org.dixantmittal.entity.Task;
 import org.dixantmittal.request.taskmanager.SchedulerRequest;
 import org.dixantmittal.response.GenericResponse;
 import org.dixantmittal.response.taskmanager.AddTaskResponse;
@@ -11,9 +10,9 @@ import org.dixantmittal.response.taskmanager.AddTaskResponse;
  */
 public interface ITaskManagerRequestService {
 
-    AddTaskResponse addTask(AddTaskRequest request);
+    AddTaskResponse addTask(Task task);
 
-    GenericResponse deleteTask(DeleteTaskRequest request);
+    GenericResponse deleteTask(String taskId);
 
     GenericResponse startScheduler();
 

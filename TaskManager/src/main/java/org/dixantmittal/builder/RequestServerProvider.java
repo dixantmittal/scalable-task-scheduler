@@ -1,9 +1,9 @@
 package org.dixantmittal.builder;
 
 import org.dixantmittal.constants.taskmanagerproxy.ServiceConstants;
+import org.dixantmittal.requestserver.IRequestServer;
 import org.dixantmittal.requestserver.impl.AddTaskRequestServer;
 import org.dixantmittal.requestserver.impl.DeleteTaskRequestServer;
-import org.dixantmittal.requestserver.IRequestServer;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -23,11 +23,13 @@ public class RequestServerProvider {
     }
 
     public IRequestServer getRequestServer(String requestType) {
-        if (requestType.equals(ServiceConstants.ADD_TASK))
-            return addTaskRequestServer;
-        else if (requestType.equals(ServiceConstants.DELETE_TASK))
-            return deleteTaskRequestServer;
-        else
-            return null;
+        switch (requestType) {
+            case ServiceConstants.ADD_TASK:
+                return addTaskRequestServer;
+            case ServiceConstants.DELETE_TASK:
+                return deleteTaskRequestServer;
+            default:
+                return null;
+        }
     }
 }

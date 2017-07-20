@@ -31,9 +31,8 @@ public class KafkaTaskQueuingService implements ITaskQueuingService {
 
     @Override
     public Boolean addTaskToExecutionQueue(Map<String, Object> jobDataMap) {
-        String taskJson = jobDataMap.get(ServiceConstants.TASK_DETAILS).toString();
+        String taskJson = jobDataMap.get(ServiceConstants.TASK_JSON).toString();
         Task task = JsonUtils.fromJson(taskJson, Task.class);
-        task.setTaskId(jobDataMap.get(ServiceConstants.TASK_ID).toString());
         log.info("Task: {}", task);
         producer.send(CacheManager.getInstance().getCache(TopicNameCache.class).get(task.getTaskType()), task.getTaskType(), task);
         return true;

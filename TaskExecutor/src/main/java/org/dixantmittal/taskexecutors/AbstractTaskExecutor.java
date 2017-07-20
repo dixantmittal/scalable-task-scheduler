@@ -4,7 +4,7 @@ import com.google.gson.JsonSyntaxException;
 import lombok.extern.slf4j.Slf4j;
 import org.dixantmittal.constants.ConfigurationConstants;
 import org.dixantmittal.constants.taskmanager.RestURIConstants;
-import org.dixantmittal.entity.RetryTask;
+import org.dixantmittal.entity.Retry;
 import org.dixantmittal.entity.Task;
 import org.dixantmittal.exception.GenericException;
 import org.dixantmittal.httpclient.HttpMethod;
@@ -12,7 +12,6 @@ import org.dixantmittal.httpclient.HttpMode;
 import org.dixantmittal.httpclient.HttpUtils;
 import org.dixantmittal.response.taskmanager.AddTaskResponse;
 import org.dixantmittal.utils.Configuration;
-import org.dixantmittal.utils.adapter.AddTaskRequestAdapter;
 
 import java.time.LocalDateTime;
 
@@ -44,33 +43,33 @@ public abstract class AbstractTaskExecutor implements ITaskExecutor {
 
     private void retryTask(Task task) {
 
-        if (task.getRetryTask() == null) {
+        if (task.getRetry() == null) {
             log.info("Retry details not found.");
             return;
         }
 
         // get retry logic
-        RetryTask retryDetails = task.getRetryTask();
-        int retryCount = retryDetails.getRetriesCount() + 1;
-        int maxRetriesAllowed = retryDetails.getMaxRetriesAllowed();
+        Retry retryDetails = task.getRetry();
+        int retryCount = retryDetails.getCount() + 1;
+        int maxRetriesAllowed = retryDetails.getMaxRetries();
         if (retryCount > maxRetriesAllowed) {
             log.error("RETRIES EXCEEDED.");
             return;
         }
-        int retryBase = retryDetails.getRetryBase();
-        int delayInSeconds = retryDetails.getDelayInSeconds();
+        int retryBase = retryDetails.getBase();
+        int delayInSeconds = retryDetails.getDelay();
         int totalDelay = delayInSeconds * (int) Math.pow(retryCount, retryBase);
 
         // find the new time
-        LocalDateTime newScheduledTime = task.getScheduledTime().plusSeconds(totalDelay);
+        LocalDateTime newScheduledTime = task.getExecutionTime().plusSeconds(totalDelay);
 
         // increase retry count
-        retryDetails.setRetriesCount(retryCount);
+        retryDetails.setCount(retryCount);
 
         // set new scheduled time
-        task.setScheduledTime(newScheduledTime);
+        task.setExecutionTime(newScheduledTime);
 
-        log.info("Trying to reschedule Task. [TASK-ID]: {}. [NEW TIME]: {}", task.getTaskId(), task.getScheduledTime());
+        log.info("Trying to reschedule Task. [TASK-ID]: {}. [NEW TIME]: {}", task.getTaskId(), task.getExecutionTime());
 
         try {
             String serverIp = Configuration.getGlobalProperty(ConfigurationConstants.TASK_MANAGER_SERVER_IP);
@@ -84,7 +83,7 @@ public abstract class AbstractTaskExecutor implements ITaskExecutor {
                             .withURI(RestURIConstants.TASK_MANAGER_BASE_URI + RestURIConstants.TASK + RestURIConstants.TASK_ID)
                             .build(),
                     AddTaskResponse.class,
-                    AddTaskRequestAdapter.adapt(task),
+                    task,
                     HttpMethod.POST
             );
             log.info("TASK RESCHEDULED. [TASK-ID]: {}", task.getTaskId());

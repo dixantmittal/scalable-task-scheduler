@@ -26,7 +26,7 @@ import java.util.concurrent.locks.ReentrantLock;
 @Slf4j
 public class RequestConsumers {
 
-    private static volatile Set<Consumer<String, String>> _THREADPOOL = new HashSet<>();
+    private static volatile Set<Consumer<String, Task>> _THREADPOOL = new HashSet<>();
     private static volatile Lock _LOCK = new ReentrantLock();
     private static RequestServerProvider provider = RequestServerProvider.getInstance();
 
@@ -39,7 +39,7 @@ public class RequestConsumers {
             log.info("Total threads allowed: {}.", threadCount);
             while (threadCount-- > 0) {
                 // create a new thread and start it
-                Consumer<String, String> consumer = ConsumerBuilder.<String, String>newConsumer()
+                Consumer<String, Task> consumer = ConsumerBuilder.<String, Task>newConsumer()
                         .withProperties(getConsumerConfig())
                         .withTopics(Configuration.getGlobalProperty(ConfigurationConstants.REQUEST_CONSUMER_TOPIC_NAME))
                         .withProcessor(getProcessor())
@@ -94,23 +94,23 @@ public class RequestConsumers {
         return properties;
     }
 
-    public static Consumer.Processor getProcessor() {
-        return new Consumer.Processor<String, String>() {
+    public static Consumer.Processor<String, Task> getProcessor() {
+        return new Consumer.Processor<String, Task>() {
             @Override
-            protected Boolean process(ConsumerRecords<String, String> record) {
-                for (ConsumerRecord<String, String> task : record) {
-                    if (task.key() == null) {
-                        log.error("Wrong task encountered. Task meta: {}", task);
+            protected Boolean process(ConsumerRecords<String, Task> records) {
+                for (ConsumerRecord<String, Task> record : records) {
+                    if (record.key() == null) {
+                        log.error("Wrong task encountered. Task meta: {}", record);
                         continue;
                     }
-                    IRequestServer requestServer = provider.getRequestServer(task.key());
+                    IRequestServer requestServer = provider.getRequestServer(record.key());
                     if (requestServer == null) {
-                        log.error("Request Server not found for request type: {}", task.key());
+                        log.error("Request Server not found for request type: {}", record.key());
                         continue;
                     }
                     log.info("Request server found: {}", requestServer.getClass());
                     try {
-                        requestServer.serve(task.value());
+                        requestServer.serve(record.value());
                     } catch (ServiceException se) {
                         log.error("Service Exception occurred while serving request. Error: ", se);
                         continue;

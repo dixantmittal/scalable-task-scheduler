@@ -1,7 +1,7 @@
 package org.dixantmittal;
 
 import org.dixantmittal.builder.TaskSchedulerClientBuilder;
-import org.dixantmittal.entity.RetryTask;
+import org.dixantmittal.entity.SchedulingType;
 import org.dixantmittal.entity.Task;
 
 import java.time.LocalDateTime;
@@ -11,11 +11,15 @@ import java.time.LocalDateTime;
  */
 public class Main {
     public static void main(String[] args) {
+        Task task = new Task(SchedulingType.CRON);
+        task.setCronExp("0 * 15 * * ?");
+        task.setTaskType("AutoWebCheckin");
+
         TaskSchedulerClientBuilder
                 .newBuilder()
                 .topic("REQUEST_QUEUE")
                 .jobSchedulerAddress("localhost:9090")
                 .getClient()
-                .addTask(new Task("defgh", "", "", LocalDateTime.MAX, new RetryTask()));
+                .addTask(task);
     }
 }

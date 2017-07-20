@@ -1,21 +1,16 @@
 package org.dixantmittal.service;
 
-import org.dixantmittal.entity.TaskSchedulingDetails;
+import org.dixantmittal.entity.Task;
 
 /**
  * Created by dixant on 27/03/17.
  */
 public interface IJobManagementService {
-    /*
-    create a new job and
-    @return taskId
-     */
-    String createJob(TaskSchedulingDetails requestData);
 
     /*
     create a new job with provided job id
     @return taskId
      */
-    String createJobWithJobId(TaskSchedulingDetails schedulingDetails, String jobId);
+    String createTask(Task task);
 
 }
