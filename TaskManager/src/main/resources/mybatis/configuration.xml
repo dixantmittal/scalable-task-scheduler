@@ -1,0 +1,23 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.dixantmittal.dbmapper.IConfigDetailsMapper">
+
+    <resultMap id="result" type="org.dixantmittal.dbmapper.entity.ConfigDetails">
+        <result property="configType" column="config_type"/>
+        <result property="configKey" column="config_key"/>
+        <result property="configValue" column="config_value"/>
+    </resultMap>
+
+    <sql id="base_column_list">
+        config_type,config_key,config_value
+    </sql>
+
+    <select id="getAllConfigs" resultMap="result">
+        SELECT
+        <include refid="base_column_list"/>
+        FROM configuration
+    </select>
+
+</mapper>
